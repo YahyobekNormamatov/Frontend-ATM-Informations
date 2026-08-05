@@ -105,8 +105,51 @@ export interface DashboardRegionStat {
   inactive: number;
   soz: number;
   nosoz: number;
-  income?: number;
-  expense?: number;
+  uzcard?: number;
+  humo?: number;
+}
+
+export interface DashboardRegionFinance {
+  region: string;
+  income: number;
+  expense: number;
+  profit: number;
+}
+
+export interface DashboardRecentMaintenance {
+  id: number;
+  protocol_number: string | null;
+  protocol_date: string;
+  part_name: string;
+  quantity: number;
+  total_amount: number;
+  atm: {
+    terminal_id: string | null;
+    serial_number: string | null;
+    region: string | null;
+  };
+}
+
+export interface DashboardMonthlyItem {
+  year: number;
+  month: number;
+  income: number;
+  expense: number;
+  profit: number;
+}
+
+export interface DashboardTopModel {
+  model: string;
+  total: number;
+  soz: number;
+  nosoz: number;
+}
+
+export interface DashboardRepairTrendItem {
+  year: number;
+  month: number;
+  repair_count: number;
+  repair_cost: number;
 }
 
 export interface DashboardResponse {
@@ -114,6 +157,11 @@ export interface DashboardResponse {
   finance: DashboardFinance;
   maintenance: DashboardMaintenance;
   top_regions: DashboardRegionStat[];
+  region_finance?: DashboardRegionFinance[];
+  recent_maintenance?: DashboardRecentMaintenance[];
+  monthly_chart?: DashboardMonthlyItem[];
+  top_models?: DashboardTopModel[];
+  repair_trend?: DashboardRepairTrendItem[];
 }
 
 export interface MaintenanceListItem {

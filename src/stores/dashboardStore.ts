@@ -14,6 +14,10 @@ export const useDashboardStore = defineStore('dashboard', () => {
   const finance = computed(() => data.value?.finance ?? null);
   const maintenance = computed(() => data.value?.maintenance ?? null);
   const topRegions = computed(() => data.value?.top_regions ?? []);
+  const regionFinance = computed(() => data.value?.region_finance ?? []);
+  const monthlyChart = computed(() => data.value?.monthly_chart ?? []);
+  const topModels = computed(() => data.value?.top_models ?? []);
+  const repairTrend = computed(() => data.value?.repair_trend ?? []);
 
   const workingPercentage = computed(() => {
     if (!summary.value) return 0;
@@ -54,6 +58,10 @@ export const useDashboardStore = defineStore('dashboard', () => {
     finance,
     maintenance,
     topRegions,
+    regionFinance,
+    monthlyChart,
+    topModels,
+    repairTrend,
     workingPercentage,
     faultyPercentage,
     networkRiskScore,

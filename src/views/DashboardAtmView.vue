@@ -54,23 +54,41 @@
             </div>
           </div>
           <div class="border-l border-gray-700 pl-6">
-            <p class="text-xs text-gray-400">TARMOQ RISK BAHOSI</p>
-            <div class="flex items-center gap-3 mt-1">
-              <span class="text-2xl font-bold text-yellow-400">{{ dashboardStore.networkRiskScore }}</span>
-              <span class="text-sm text-gray-300">/ 100</span>
+            <p class="text-xs text-gray-400 uppercase tracking-wider">Tarmoq sozligi</p>
+
+            <div class="flex items-baseline gap-2 mt-2">
+              <span class="text-4xl font-bold tabular-nums" :class="healthColor.text">
+                {{ formatPercent(dashboardStore.workingPercentage) }}
+              </span>
+              <span class="text-xs text-gray-500">ishlayapti</span>
             </div>
-            <div class="flex items-center gap-2 mt-1">
-              <span class="px-2 py-0.5 bg-yellow-400/20 text-yellow-400 text-xs rounded-full">{{ dashboardStore.networkRiskLevel }}</span>
-              <span class="text-xs text-gray-400">{{ stabilityText }}</span>
-            </div>
-            <div class="mt-3 grid grid-cols-2 gap-3 text-xs">
-              <div>
-                <p class="text-gray-500">Soz</p>
-                <p class="text-green-400 font-bold">{{ summary?.soz ?? '—' }}</p>
+
+            <div class="mt-2">
+              <div class="flex items-center gap-1.5">
+                <span class="w-1.5 h-1.5 rounded-full" :class="healthColor.dot"></span>
+                <span class="text-xs font-medium" :class="healthColor.text">{{ healthLabel }}</span>
               </div>
-              <div>
-                <p class="text-gray-500">Nosoz</p>
-                <p class="text-red-400 font-bold">{{ summary?.nosoz ?? '—' }}</p>
+              <p class="text-xs text-gray-500 mt-1 leading-snug">{{ healthHint }}</p>
+            </div>
+
+            <div class="mt-3 w-full h-1.5 bg-slate-800 rounded-full overflow-hidden">
+              <div
+                class="h-full transition-all duration-500 rounded-full"
+                :class="healthColor.bar"
+                :style="{ width: `${dashboardStore.workingPercentage}%` }"
+              ></div>
+            </div>
+
+            <div class="mt-3 flex flex-wrap gap-x-4 gap-y-1.5 text-xs">
+              <div class="flex items-center gap-1.5">
+                <span class="w-2 h-2 rounded-full bg-green-400"></span>
+                <span class="text-gray-400">Soz</span>
+                <span class="text-green-400 font-bold tabular-nums">{{ summary?.soz ?? '—' }}</span>
+              </div>
+              <div class="flex items-center gap-1.5">
+                <span class="w-2 h-2 rounded-full bg-red-400"></span>
+                <span class="text-gray-400">Nosoz</span>
+                <span class="text-red-400 font-bold tabular-nums">{{ summary?.nosoz ?? '—' }}</span>
               </div>
             </div>
           </div>
@@ -98,7 +116,7 @@
             <p class="text-lg font-bold">{{ summary?.humo ?? '—' }}</p>
           </div>
           <div>
-            <p class="text-xs text-gray-500">UPTIME</p>
+            <p class="text-xs text-gray-500">Soz ulushi</p>
             <p class="text-lg font-bold">{{ formatPercent(dashboardStore.workingPercentage) }}</p>
           </div>
         </div>
@@ -123,7 +141,7 @@
         />
         <StatCard
           title="NOSOZ"
-          :value="summary?.nosoz ?? '—'"
+          :value="summary?.nosoz ?? '-'"
           :icon="WifiOff"
           iconBg="bg-red-50"
           iconColor="text-red-600 dark:text-red-300"
@@ -259,11 +277,40 @@ const totalTurnover = computed(() => {
   return finance.value.income + finance.value.expense;
 });
 
-const stabilityText = computed(() => {
-  const level = dashboardStore.networkRiskLevel;
-  if (level === 'YUQORI') return 'Barqaror';
-  if (level === "O'RTA") return 'Nazorat talab qiladi';
-  return "E'tibor talab qiladi";
+const healthLabel = computed(() => {
+  const p = dashboardStore.workingPercentage;
+  if (p >= 90) return "A'lo holatda";
+  if (p >= 80) return 'Yaxshi';
+  if (p >= 70) return "O'rtacha";
+  if (p >= 50) return 'Diqqat talab qiladi';
+  return 'Xavotirli holat';
+});
+
+const healthHint = computed(() => {
+  const p = dashboardStore.workingPercentage;
+  if (p >= 80) return "tarmoq barqaror ishlamoqda";
+  if (p >= 70) return 'nazorat ostida ushlash tavsiya etiladi';
+  if (p >= 50) return "aralashuv talab qilinadi";
+  return "shoshilinch chora ko'ring";
+});
+
+const healthColor = computed(() => {
+  const p = dashboardStore.workingPercentage;
+  if (p >= 85) return {
+    text: 'text-green-400',
+    dot: 'bg-green-400',
+    bar: 'bg-green-500'
+  };
+  if (p >= 70) return {
+    text: 'text-yellow-400',
+    dot: 'bg-yellow-400',
+    bar: 'bg-yellow-500'
+  };
+  return {
+    text: 'text-red-400',
+    dot: 'bg-red-400',
+    bar: 'bg-red-500'
+  };
 });
 
 const hasCardData = computed(() => (summary.value?.uzcard ?? 0) + (summary.value?.humo ?? 0) > 0);

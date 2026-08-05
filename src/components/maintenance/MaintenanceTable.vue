@@ -57,7 +57,7 @@
             </td>
           </tr>
           <tr
-            v-for="item in filteredItems"
+            v-for="item in paginatedItems"
             :key="item.id"
             class="hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors"
           >
@@ -88,11 +88,39 @@
       </table>
     </div>
 
-    <div v-if="!isLoading && filteredItems.length > 0" class="px-4 py-3 border-t border-gray-100 dark:border-slate-800 flex items-center justify-between">
+    <div v-if="!isLoading && filteredItems.length > 0" class="px-4 py-3 border-t border-gray-100 dark:border-slate-800 flex flex-wrap items-center justify-between gap-3">
       <p class="text-sm text-gray-500 dark:text-slate-400">
-        <span class="font-semibold text-gray-800 dark:text-slate-100">{{ filteredItems.length }}</span>
-        / {{ items.length }}
+        <span class="font-semibold text-gray-800 dark:text-slate-100">{{ paginationRange.from }}–{{ paginationRange.to }}</span>
+        / <span class="font-semibold text-gray-800 dark:text-slate-100">{{ filteredItems.length }}</span>
+        <span v-if="filteredItems.length !== items.length" class="text-gray-400 dark:text-slate-500"> ({{ items.length }} dan)</span>
       </p>
+      <div v-if="totalPages > 1" class="flex items-center gap-2">
+        <button
+          class="px-3 py-1.5 text-sm text-gray-500 dark:text-slate-300 border border-gray-200 dark:border-slate-700 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          :disabled="currentPage <= 1"
+          @click="goToPage(currentPage - 1)"
+        >
+          Oldingi
+        </button>
+        <button
+          v-for="p in visiblePageNumbers"
+          :key="p"
+          class="px-3 py-1.5 text-sm rounded-lg transition-colors min-w-[36px]"
+          :class="p === currentPage
+            ? 'bg-purple-600 text-white'
+            : 'text-gray-500 dark:text-slate-300 hover:bg-gray-50 dark:hover:bg-slate-800'"
+          @click="goToPage(p)"
+        >
+          {{ p }}
+        </button>
+        <button
+          class="px-3 py-1.5 text-sm text-gray-500 dark:text-slate-300 border border-gray-200 dark:border-slate-700 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          :disabled="currentPage >= totalPages"
+          @click="goToPage(currentPage + 1)"
+        >
+          Keyingi
+        </button>
+      </div>
     </div>
   </div>
 </template>
@@ -100,13 +128,15 @@
 
 
 <script setup lang="ts">
-import { computed, ref } from 'vue';
+import { computed, ref, watch } from 'vue';
 import Skeleton from '@/components/common/Skeleton.vue';
 import ErrorState from '@/components/common/ErrorState.vue';
 import EmptyState from '@/components/common/EmptyState.vue';
 import AppSelect from '@/components/common/AppSelect.vue';
 import type { MaintenanceListItem } from '@/types/api';
 import { toNumber } from '@/utils/format';
+
+const PAGE_SIZE = 15;
 
 interface Props {
   items: MaintenanceListItem[];
@@ -126,6 +156,7 @@ const props = withDefaults(defineProps<Props>(), {
 const searchQuery = ref('');
 const filialFilter = ref('');
 const moduleFilter = ref('');
+const currentPage = ref(1);
 
 const filialOptions = computed(() => {
   const set = new Set(props.items.map((i) => i.filial_name).filter(Boolean));
@@ -166,6 +197,44 @@ const filteredItems = computed(() => {
     result = result.filter((i) => i.equipment_module === moduleFilter.value);
   }
   return result;
+});
+
+const totalPages = computed(() => Math.max(1, Math.ceil(filteredItems.value.length / PAGE_SIZE)));
+
+const paginatedItems = computed(() => {
+  const start = (currentPage.value - 1) * PAGE_SIZE;
+  return filteredItems.value.slice(start, start + PAGE_SIZE);
+});
+
+const paginationRange = computed(() => {
+  if (filteredItems.value.length === 0) return { from: 0, to: 0 };
+  const from = (currentPage.value - 1) * PAGE_SIZE + 1;
+  const to = Math.min(currentPage.value * PAGE_SIZE, filteredItems.value.length);
+  return { from, to };
+});
+
+const visiblePageNumbers = computed(() => {
+  const total = totalPages.value;
+  const current = currentPage.value;
+  const span = 2;
+  const start = Math.max(1, current - span);
+  const end = Math.min(total, current + span);
+  const nums: number[] = [];
+  for (let p = start; p <= end; p++) nums.push(p);
+  return nums;
+});
+
+function goToPage(p: number): void {
+  if (p < 1 || p > totalPages.value) return;
+  currentPage.value = p;
+}
+
+watch([searchQuery, filialFilter, moduleFilter], () => {
+  currentPage.value = 1;
+});
+
+watch(() => props.items.length, () => {
+  if (currentPage.value > totalPages.value) currentPage.value = 1;
 });
 
 const totals = computed(() => {

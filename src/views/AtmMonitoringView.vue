@@ -119,7 +119,9 @@
                 <tr
                   v-for="(atm, idx) in atmStore.items"
                   :key="atm.id"
-                  class="hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors"
+                  class="hover:bg-purple-50/40 dark:hover:bg-purple-500/5 transition-colors cursor-pointer"
+                  :title="`${atm.region} viloyati bo'yicha batafsil ko'rish`"
+                  @click="openRegionDetail(atm.region)"
                 >
                   <td class="px-4 py-3 text-gray-500 dark:text-slate-400">
                     {{ (atmStore.page - 1) * atmStore.pageSize + idx + 1 }}
@@ -216,7 +218,7 @@
           </div>
           <div class="bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-gray-100 dark:border-slate-800 p-5 text-center">
             <p class="text-4xl font-extrabold text-purple-600 dark:text-purple-300 tabular-nums">{{ formatPercent(chartTotals.uptime) }}</p>
-            <p class="text-xs text-gray-500 dark:text-slate-400 uppercase tracking-wider mt-1">Uptime</p>
+            <p class="text-xs text-gray-500 dark:text-slate-400 uppercase tracking-wider mt-1">Soz ulushi</p>
           </div>
         </div>
 
@@ -323,6 +325,8 @@
         </div>
       </template>
     </template>
+
+    <RegionDetailModal v-model:open="regionModalOpen" :region="selectedRegionForModal" />
   </div>
 </template>
 
@@ -336,6 +340,7 @@ import EmptyState from '@/components/common/EmptyState.vue';
 import DonutChart from '@/components/charts/DonutChart.vue';
 import DualAxisChart from '@/components/charts/DualAxisChart.vue';
 import HorizontalBarChart from '@/components/charts/HorizontalBarChart.vue';
+import RegionDetailModal from '@/components/monitoring/RegionDetailModal.vue';
 import { STATUS_BADGE_CLASSES, STATUS_DOT_CLASSES, statusToLabel, statusToVariant } from '@/types';
 import { formatPercent, safePercentage } from '@/utils/format';
 import type { BarLineChartData, DoughnutChartData } from '@/types/api';
@@ -352,6 +357,15 @@ const selectedTab = ref<StatusTab>('all');
 const searchQuery = ref('');
 const selectedRegion = ref('');
 const selectedCardType = ref('');
+
+const regionModalOpen = ref(false);
+const selectedRegionForModal = ref<string | null>(null);
+
+function openRegionDetail(region: string | null | undefined): void {
+  if (!region) return;
+  selectedRegionForModal.value = region;
+  regionModalOpen.value = true;
+}
 
 let searchDebounce: ReturnType<typeof setTimeout> | null = null;
 

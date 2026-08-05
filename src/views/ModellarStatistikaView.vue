@@ -36,7 +36,7 @@
 
       <div class="bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-gray-100 dark:border-slate-800 p-6">
         <h3 class="text-sm font-semibold text-gray-700 dark:text-slate-200 mb-1">Modellar samaradorligi</h3>
-        <p class="text-xs text-gray-400 dark:text-slate-500 mb-3">Uptime - ushbu model ATMlari orasida "Soz" holatidagilar ulushi</p>
+        <p class="text-xs text-gray-400 dark:text-slate-500 mb-3"></p>
         <div v-if="modelDetails.length === 0" class="py-8">
           <EmptyState message="Ma'lumot mavjud emas" />
         </div>
@@ -68,7 +68,7 @@
                 <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 dark:text-slate-400 uppercase tracking-wider">Soni</th>
                 <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 dark:text-slate-400 uppercase tracking-wider">Online</th>
                 <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 dark:text-slate-400 uppercase tracking-wider">Offline</th>
-                <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 dark:text-slate-400 uppercase tracking-wider">Uptime</th>
+                <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 dark:text-slate-400 uppercase tracking-wider">Soz ulushi</th>
                 <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 dark:text-slate-400 uppercase tracking-wider">Holati</th>
               </tr>
             </thead>

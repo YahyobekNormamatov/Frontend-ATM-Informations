@@ -117,12 +117,11 @@
                   <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 dark:text-slate-400 uppercase tracking-wider">Viloyat</th>
                   <th class="px-4 py-3 text-right text-xs font-semibold text-gray-500 dark:text-slate-400 uppercase tracking-wider">Jami ATM</th>
                   <th class="px-4 py-3 text-right text-xs font-semibold text-gray-500 dark:text-slate-400 uppercase tracking-wider">Faol</th>
-                  <th class="px-4 py-3 text-right text-xs font-semibold text-gray-500 dark:text-slate-400 uppercase tracking-wider">Nofaol</th>
                   <th class="px-4 py-3 text-right text-xs font-semibold text-gray-500 dark:text-slate-400 uppercase tracking-wider">Soz</th>
                   <th class="px-4 py-3 text-right text-xs font-semibold text-gray-500 dark:text-slate-400 uppercase tracking-wider">Nosoz</th>
                   <th class="px-4 py-3 text-right text-xs font-semibold text-gray-500 dark:text-slate-400 uppercase tracking-wider">Kirim</th>
                   <th class="px-4 py-3 text-right text-xs font-semibold text-gray-500 dark:text-slate-400 uppercase tracking-wider">Chiqim</th>
-                  <th class="px-4 py-3 text-right text-xs font-semibold text-gray-500 dark:text-slate-400 uppercase tracking-wider">Uptime</th>
+                  <th class="px-4 py-3 text-right text-xs font-semibold text-gray-500 dark:text-slate-400 uppercase tracking-wider">Soz ulushi</th>
                 </tr>
               </thead>
               <tbody class="divide-y divide-gray-100 dark:divide-slate-800">
@@ -134,11 +133,10 @@
                   <td class="px-4 py-3 font-medium text-gray-700 dark:text-slate-200 max-w-[200px] truncate" :title="region.region">{{ region.region }}</td>
                   <td class="px-4 py-3 text-right text-gray-700 dark:text-slate-200 font-semibold">{{ region.total }}</td>
                   <td class="px-4 py-3 text-right text-gray-600 dark:text-slate-300">{{ region.active }}</td>
-                  <td class="px-4 py-3 text-right text-gray-500 dark:text-slate-400">{{ region.inactive ?? '—' }}</td>
                   <td class="px-4 py-3 text-right text-green-600 dark:text-green-400 font-semibold">{{ region.soz ?? '—' }}</td>
                   <td class="px-4 py-3 text-right text-red-600 dark:text-red-400 font-semibold">{{ region.nosoz ?? '—' }}</td>
-                  <td class="px-4 py-3 text-right text-gray-600 dark:text-slate-300 font-mono">{{ formatMoneyOrDash(region.income) }}</td>
-                  <td class="px-4 py-3 text-right text-gray-600 dark:text-slate-300 font-mono">{{ formatMoneyOrDash(region.expense) }}</td>
+                  <td class="px-4 py-3 text-right text-green-600 dark:text-green-400 font-mono">{{ formatMoneyOrDash(region.income) }}</td>
+                  <td class="px-4 py-3 text-right text-red-600 dark:text-red-400 font-mono">{{ formatMoneyOrDash(region.expense) }}</td>
                   <td class="px-4 py-3 text-right">
                     <div class="flex items-center gap-2 justify-end">
                       <div class="w-16 h-1.5 bg-gray-100 dark:bg-slate-800 rounded-full overflow-hidden">
@@ -154,11 +152,10 @@
                   <td colspan="2" class="px-4 py-3 text-right text-xs font-semibold text-gray-500 dark:text-slate-400 uppercase">Jami:</td>
                   <td class="px-4 py-3 text-right text-sm text-gray-800 dark:text-slate-100 font-bold">{{ regionsTotal.total }}</td>
                   <td class="px-4 py-3 text-right text-sm text-gray-800 dark:text-slate-100 font-bold">{{ regionsTotal.active }}</td>
-                  <td class="px-4 py-3 text-right text-sm text-gray-500 dark:text-slate-400 font-bold">{{ regionsTotal.inactive }}</td>
                   <td class="px-4 py-3 text-right text-sm text-green-600 dark:text-green-400 font-bold">{{ regionsTotal.soz }}</td>
                   <td class="px-4 py-3 text-right text-sm text-red-600 dark:text-red-400 font-bold">{{ regionsTotal.nosoz }}</td>
-                  <td class="px-4 py-3 text-right text-sm text-gray-800 dark:text-slate-100 font-bold font-mono">{{ formatMoneyOrDash(regionsTotal.income) }}</td>
-                  <td class="px-4 py-3 text-right text-sm text-gray-800 dark:text-slate-100 font-bold font-mono">{{ formatMoneyOrDash(regionsTotal.expense) }}</td>
+                  <td class="px-4 py-3 text-right text-sm text-green-600 dark:text-green-400 font-bold font-mono">{{ formatMoneyOrDash(regionsTotal.income) }}</td>
+                  <td class="px-4 py-3 text-right text-sm text-red-600 dark:text-red-400 font-bold font-mono">{{ formatMoneyOrDash(regionsTotal.expense) }}</td>
                   <td class="px-4 py-3 text-right text-sm text-purple-700 dark:text-purple-300 font-bold">{{ formatPercent(safePercentage(regionsTotal.soz, regionsTotal.total)) }}</td>
                 </tr>
               </tfoot>
@@ -208,7 +205,7 @@ import Skeleton from '@/components/common/Skeleton.vue';
 import ErrorState from '@/components/common/ErrorState.vue';
 import EmptyState from '@/components/common/EmptyState.vue';
 import { Landmark, Wifi, AlertTriangle, DollarSign, WifiOff } from 'lucide-vue-next';
-import { formatPercent, safePercentage } from '@/utils/format';
+import { formatPercent, formatSumShort, safePercentage } from '@/utils/format';
 import type { BarLineChartData, DashboardRegionStat } from '@/types/api';
 import { onRefresh } from '@/composables/useRefreshBus';
 
@@ -217,10 +214,29 @@ const view = ref<'kirish' | 'tranzaksiya'>('kirish');
 const chartView = ref<'table' | 'chart'>('table');
 
 const summary = computed(() => dashboardStore.summary);
-const topRegions = computed(() => dashboardStore.topRegions);
+
+const financeByRegion = computed(() => {
+  const map = new Map<string, { income: number; expense: number; profit: number }>();
+  for (const f of dashboardStore.regionFinance) {
+    map.set(f.region, { income: f.income, expense: f.expense, profit: f.profit });
+  }
+  return map;
+});
+
+const topRegions = computed(() =>
+  dashboardStore.topRegions.map((r) => {
+    const fin = financeByRegion.value.get(r.region);
+    return {
+      ...r,
+      income: fin?.income,
+      expense: fin?.expense,
+      profit: fin?.profit
+    };
+  })
+);
 
 const regionsTotal = computed(() => {
-  const acc = { total: 0, active: 0, inactive: 0, soz: 0, nosoz: 0, income: 0, expense: 0 };
+  const acc = { total: 0, active: 0, inactive: 0, soz: 0, nosoz: 0, income: 0, expense: 0, profit: 0 };
   for (const r of topRegions.value) {
     acc.total += r.total ?? 0;
     acc.active += r.active ?? 0;
@@ -229,6 +245,7 @@ const regionsTotal = computed(() => {
     acc.nosoz += r.nosoz ?? 0;
     acc.income += r.income ?? 0;
     acc.expense += r.expense ?? 0;
+    acc.profit += r.profit ?? 0;
   }
   return acc;
 });
@@ -252,8 +269,8 @@ function uptimeTextClass(r: DashboardRegionStat): string {
 }
 
 function formatMoneyOrDash(value: number | null | undefined): string {
-  if (value === null || value === undefined || value === 0) return '—';
-  return Math.round(value).toLocaleString('uz-UZ').replace(/,/g, ' ');
+  if (value === null || value === undefined) return '—';
+  return formatSumShort(value);
 }
 
 
