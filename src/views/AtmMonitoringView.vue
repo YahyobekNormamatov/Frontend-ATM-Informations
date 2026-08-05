@@ -120,8 +120,8 @@
                   v-for="(atm, idx) in atmStore.items"
                   :key="atm.id"
                   class="hover:bg-purple-50/40 dark:hover:bg-purple-500/5 transition-colors cursor-pointer"
-                  :title="`${atm.region} viloyati bo'yicha batafsil ko'rish`"
-                  @click="openRegionDetail(atm.region)"
+                  :title="`${atm.name || 'ATM'} batafsil ma'lumot`"
+                  @click="openAtmDetail(atm)"
                 >
                   <td class="px-4 py-3 text-gray-500 dark:text-slate-400">
                     {{ (atmStore.page - 1) * atmStore.pageSize + idx + 1 }}
@@ -326,7 +326,11 @@
       </template>
     </template>
 
-    <RegionDetailModal v-model:open="regionModalOpen" :region="selectedRegionForModal" />
+    <AtmDetailModal
+      v-model:open="atmModalOpen"
+      :atm-id="selectedAtm?.id ?? null"
+      :fallback-name="selectedAtm?.name ?? null"
+    />
   </div>
 </template>
 
@@ -340,7 +344,8 @@ import EmptyState from '@/components/common/EmptyState.vue';
 import DonutChart from '@/components/charts/DonutChart.vue';
 import DualAxisChart from '@/components/charts/DualAxisChart.vue';
 import HorizontalBarChart from '@/components/charts/HorizontalBarChart.vue';
-import RegionDetailModal from '@/components/monitoring/RegionDetailModal.vue';
+import AtmDetailModal from '@/components/monitoring/AtmDetailModal.vue';
+import type { AtmListItem } from '@/types/api';
 import { STATUS_BADGE_CLASSES, STATUS_DOT_CLASSES, statusToLabel, statusToVariant } from '@/types';
 import { formatPercent, safePercentage } from '@/utils/format';
 import type { BarLineChartData, DoughnutChartData } from '@/types/api';
@@ -358,13 +363,12 @@ const searchQuery = ref('');
 const selectedRegion = ref('');
 const selectedCardType = ref('');
 
-const regionModalOpen = ref(false);
-const selectedRegionForModal = ref<string | null>(null);
+const atmModalOpen = ref(false);
+const selectedAtm = ref<AtmListItem | null>(null);
 
-function openRegionDetail(region: string | null | undefined): void {
-  if (!region) return;
-  selectedRegionForModal.value = region;
-  regionModalOpen.value = true;
+function openAtmDetail(atm: AtmListItem): void {
+  selectedAtm.value = atm;
+  atmModalOpen.value = true;
 }
 
 let searchDebounce: ReturnType<typeof setTimeout> | null = null;

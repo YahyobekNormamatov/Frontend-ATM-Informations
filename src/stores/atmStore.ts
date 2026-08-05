@@ -2,7 +2,6 @@ import { defineStore } from 'pinia';
 import { computed, ref } from 'vue';
 import { atmService } from '@/services/atmService';
 import { extractErrorMessage } from '@/api/http';
-import { notify } from '@/utils/notify';
 import type { AtmDetailResponse, AtmFiltersResponse, AtmListItem } from '@/types/api';
 
 export interface AtmListFilters {
@@ -105,8 +104,8 @@ export const useAtmStore = defineStore('atm', () => {
     isFilterOptionsLoading.value = true;
     try {
       filterOptions.value = await atmService.filters();
-    } catch (err) {
-      notify.error(extractErrorMessage(err) || "Filter variantlarini yuklab bo'lmadi.");
+    } catch {
+      filterOptions.value = null;
     } finally {
       isFilterOptionsLoading.value = false;
     }

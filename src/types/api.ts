@@ -48,10 +48,34 @@ export interface AtmMonthlyStatistic {
   quantity: number;
 }
 
+export interface AtmServiceContractPayment {
+  year: number;
+  month: number;
+  payment_type: string;
+  amount: number;
+}
+
+export interface AtmServiceContract {
+  btech_monthly_fee: number;
+  glob_monthly_fee: number;
+  payments: AtmServiceContractPayment[];
+}
+
+export interface AtmYearlyStatistic {
+  year: number;
+  card_type: string;
+  income: number;
+  expense: number;
+  repair_cost: number;
+  quantity: number;
+}
+
 export interface AtmDetailResponse {
   general: AtmDetailGeneral;
   technical: AtmDetailTechnical;
+  service_contract?: AtmServiceContract;
   monthly_statistics: AtmMonthlyStatistic[];
+  yearly_statistics?: AtmYearlyStatistic[];
 }
 
 export interface AiAnalysisResponse {

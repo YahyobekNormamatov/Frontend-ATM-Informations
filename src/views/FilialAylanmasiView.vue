@@ -14,7 +14,7 @@
     />
 
     <template v-else>
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
         <StatCard
           title="JAMI ATM"
           :value="summary?.total_atms ?? '—'"
@@ -32,22 +32,6 @@
           progressLabel="Ishlayotgan qurilmalar"
         />
         <StatCard
-          title="OGOHLANTIRISH"
-          value="—"
-          :icon="AlertTriangle"
-          iconBg="bg-orange-50"
-          iconColor="text-orange-500 dark:text-orange-300"
-          subtitle="Backend API'da mavjud emas"
-        />
-        <StatCard
-          title="PUL TUGAGAN"
-          value="—"
-          :icon="DollarSign"
-          iconBg="bg-red-50"
-          iconColor="text-red-500 dark:text-red-300"
-          subtitle="Backend API'da mavjud emas"
-        />
-        <StatCard
           title="OFLAYN"
           :value="summary?.nosoz ?? '—'"
           :icon="WifiOff"
@@ -59,53 +43,28 @@
         />
       </div>
 
-      <div class="flex flex-wrap items-center justify-between gap-4 bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-gray-100 dark:border-slate-800 p-4">
-        <div class="flex items-center gap-4">
-          <div class="flex rounded-lg border border-gray-200 dark:border-slate-700 overflow-hidden">
-            <button
-              class="px-4 py-2 text-sm font-medium transition-colors"
-              :class="view === 'kirish'
-                ? 'bg-purple-600 text-white'
-                : 'bg-white dark:bg-slate-900 text-gray-600 dark:text-slate-300 hover:bg-gray-50 dark:hover:bg-slate-800'"
-              @click="view = 'kirish'">
-              Kirish / Chiqish
-            </button>
-            <button
-              class="px-4 py-2 text-sm font-medium transition-colors border-l border-gray-200 dark:border-slate-700"
-              :class="view === 'tranzaksiya'
-                ? 'bg-purple-600 text-white'
-                : 'bg-white dark:bg-slate-900 text-gray-600 dark:text-slate-300 hover:bg-gray-50 dark:hover:bg-slate-800'"
-              @click="view = 'tranzaksiya'">
-              Tranzaksiya turlari
-            </button>
-          </div>
-        </div>
-        <div v-if="view === 'kirish'" class="flex items-center gap-2">
-          <button
-            class="px-4 py-2 text-sm font-medium rounded-lg transition-colors"
-            :class="chartView === 'table'
-              ? 'bg-purple-600 text-white'
-              : 'bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-slate-300 hover:bg-gray-200 dark:hover:bg-slate-700'"
-            @click="chartView = 'table'">
-            Jadval
-          </button>
-          <button
-            class="px-4 py-2 text-sm font-medium rounded-lg transition-colors"
-            :class="chartView === 'chart'
-              ? 'bg-purple-600 text-white'
-              : 'bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-slate-300 hover:bg-gray-200 dark:hover:bg-slate-700'"
-            @click="chartView = 'chart'">
-            Diagramma
-          </button>
-        </div>
+      <div class="flex items-center gap-2 bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-gray-100 dark:border-slate-800 p-2 w-fit">
+        <button
+          class="px-4 py-2 text-sm font-medium rounded-lg transition-colors"
+          :class="chartView === 'table'
+            ? 'bg-purple-600 text-white'
+            : 'text-gray-600 dark:text-slate-300 hover:bg-gray-50 dark:hover:bg-slate-800'"
+          @click="chartView = 'table'"
+        >
+          Jadval
+        </button>
+        <button
+          class="px-4 py-2 text-sm font-medium rounded-lg transition-colors"
+          :class="chartView === 'chart'
+            ? 'bg-purple-600 text-white'
+            : 'text-gray-600 dark:text-slate-300 hover:bg-gray-50 dark:hover:bg-slate-800'"
+          @click="chartView = 'chart'"
+        >
+          Diagramma
+        </button>
       </div>
 
-      <div v-if="view === 'tranzaksiya'" class="bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-gray-100 dark:border-slate-800 p-6">
-        <EmptyState message="Tranzaksiya turlari bo'yicha filial kesimida ma'lumot API'da mavjud emas" />
-      </div>
-
-      <template v-else>
-        <div v-if="chartView === 'table'" class="bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-gray-100 dark:border-slate-800 overflow-hidden">
+      <div v-if="chartView === 'table'" class="bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-gray-100 dark:border-slate-800 overflow-hidden">
           <div v-if="topRegions.length === 0" class="p-8">
             <EmptyState message="Filiallar kesimidagi ma'lumot mavjud emas" />
           </div>
@@ -191,10 +150,11 @@
             </div>
           </template>
         </div>
-      </template>
     </template>
   </div>
 </template>
+
+
 
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue';
@@ -204,13 +164,12 @@ import DualAxisChart from '@/components/charts/DualAxisChart.vue';
 import Skeleton from '@/components/common/Skeleton.vue';
 import ErrorState from '@/components/common/ErrorState.vue';
 import EmptyState from '@/components/common/EmptyState.vue';
-import { Landmark, Wifi, AlertTriangle, DollarSign, WifiOff } from 'lucide-vue-next';
+import { Landmark, Wifi, WifiOff } from 'lucide-vue-next';
 import { formatPercent, formatSumShort, safePercentage } from '@/utils/format';
 import type { BarLineChartData, DashboardRegionStat } from '@/types/api';
 import { onRefresh } from '@/composables/useRefreshBus';
 
 const dashboardStore = useDashboardStore();
-const view = ref<'kirish' | 'tranzaksiya'>('kirish');
 const chartView = ref<'table' | 'chart'>('table');
 
 const summary = computed(() => dashboardStore.summary);
