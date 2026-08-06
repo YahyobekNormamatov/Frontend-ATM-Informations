@@ -39,16 +39,14 @@ export function clearSession(): void {
   setRefreshToken(null);
 }
 
-const baseURL = import.meta.env.VITE_API_BASE_URL || 'https://flashily-coastal-feel.ngrok-free.dev/api/v1';
+const baseURL = import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000/api/v1';
 
 export const http: AxiosInstance = axios.create({
   baseURL,
   timeout: 20000,
   headers: {
-  Accept: 'application/json',
-  'ngrok-skip-browser-warning': 'true'
-}
-
+    Accept: 'application/json'
+  }
 });
 
 

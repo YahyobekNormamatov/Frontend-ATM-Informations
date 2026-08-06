@@ -56,5 +56,38 @@ export const atmService = {
       { timeout: 90000 }
     );
     return data;
+  },
+
+  async exportSingle(id: number | string): Promise<{ blob: Blob; filename: string }> {
+    const response = await http.get<Blob>(ENDPOINTS.atms.exportSingle(id), {
+      responseType: 'blob',
+      timeout: 60000
+    });
+    const disposition = response.headers['content-disposition'] as string | undefined;
+    const match = disposition?.match(/filename[^;=\n]*=(?:UTF-8'')?"?([^";\n]*)"?/i);
+    const filename = match?.[1] ? decodeURIComponent(match[1]) : `ATM_${id}.xlsx`;
+    return { blob: response.data, filename };
+  },
+
+  async exportExcel(
+    params: AtmListQueryParams = {},
+    onProgress?: (percent: number, loaded: number) => void
+  ): Promise<{ blob: Blob; filename: string }> {
+    const response = await http.get<Blob>(ENDPOINTS.atms.export, {
+      params: toQueryParams(params),
+      responseType: 'blob',
+      timeout: 120000,
+      onDownloadProgress: (event) => {
+        if (!onProgress) return;
+        const total = event.total ?? 0;
+        const loaded = event.loaded ?? 0;
+        const percent = total > 0 ? Math.round((loaded / total) * 100) : 0;
+        onProgress(percent, loaded);
+      }
+    });
+    const disposition = response.headers['content-disposition'] as string | undefined;
+    const match = disposition?.match(/filename[^;=\n]*=(?:UTF-8'')?"?([^";\n]*)"?/i);
+    const filename = match?.[1] ? decodeURIComponent(match[1]) : 'ATM_Report.xlsx';
+    return { blob: response.data, filename };
   }
 };

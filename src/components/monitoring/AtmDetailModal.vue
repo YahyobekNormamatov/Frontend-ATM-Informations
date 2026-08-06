@@ -6,11 +6,9 @@
         class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
         role="dialog"
         aria-modal="true"
-        @click.self="close"
-      >
+        @click.self="close">
         <div
-          class="w-full max-w-6xl max-h-[90vh] bg-white dark:bg-slate-900 rounded-2xl shadow-2xl ring-1 ring-gray-200 dark:ring-slate-800 flex flex-col overflow-hidden"
-        >
+          class="w-full max-w-6xl max-h-[90vh] bg-white dark:bg-slate-900 rounded-2xl shadow-2xl ring-1 ring-gray-200 dark:ring-slate-800 flex flex-col overflow-hidden">
           <div class="flex items-start justify-between gap-4 px-6 py-4 border-b border-gray-100 dark:border-slate-800">
             <div class="flex items-start gap-3 min-w-0">
               <div class="w-10 h-10 rounded-xl bg-purple-50 dark:bg-purple-500/15 flex items-center justify-center flex-shrink-0">
@@ -22,8 +20,7 @@
                   <span
                     v-if="detail?.technical?.status"
                     class="px-2 py-0.5 rounded-full text-xs font-medium inline-flex items-center gap-1.5"
-                    :class="STATUS_BADGE_CLASSES[statusToVariant(detail.technical.status)]"
-                  >
+                    :class="STATUS_BADGE_CLASSES[statusToVariant(detail.technical.status)]">
                     <span class="w-1.5 h-1.5 rounded-full" :class="STATUS_DOT_CLASSES[statusToVariant(detail.technical.status)]"></span>
                     {{ statusToLabel(detail.technical.status) }}
                   </span>
@@ -40,8 +37,7 @@
               type="button"
               class="w-8 h-8 rounded-lg text-gray-500 dark:text-slate-400 hover:bg-gray-100 dark:hover:bg-slate-800 flex items-center justify-center transition-colors flex-shrink-0"
               aria-label="Yopish"
-              @click="close"
-            >
+              @click="close">
               <X class="w-5 h-5" />
             </button>
           </div>
@@ -49,8 +45,7 @@
           <div class="flex-1 overflow-y-auto px-6 py-5">
             <div
               v-if="atmStore.isDetailLoading && !detail"
-              class="flex flex-col items-center justify-center py-16"
-            >
+              class="flex flex-col items-center justify-center py-16">
               <div class="relative w-12 h-12 mb-3">
                 <div class="absolute inset-0 rounded-full border-4 border-purple-100 dark:border-purple-500/20"></div>
                 <div class="absolute inset-0 rounded-full border-4 border-transparent border-t-purple-600 dark:border-t-purple-300 animate-spin"></div>
@@ -60,8 +55,7 @@
 
             <div
               v-else-if="atmStore.detailError && !detail"
-              class="flex flex-col items-center justify-center py-12 text-center"
-            >
+              class="flex flex-col items-center justify-center py-12 text-center">
               <div class="w-12 h-12 rounded-full bg-red-50 dark:bg-red-500/15 flex items-center justify-center mb-3">
                 <AlertCircle class="w-6 h-6 text-red-600 dark:text-red-400" />
               </div>

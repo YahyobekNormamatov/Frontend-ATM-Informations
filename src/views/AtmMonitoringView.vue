@@ -3,25 +3,53 @@
     <div class="flex flex-wrap items-center justify-between gap-3">
       <div>
       </div>
-      <div class="flex items-center gap-2 bg-white dark:bg-slate-900 rounded-lg border border-gray-200 dark:border-slate-700 p-1">
+      <div class="flex items-center gap-3 flex-wrap">
         <button
-          class="px-4 py-1.5 text-sm font-medium rounded-md transition-colors"
-          :class="viewMode === 'table'
-            ? 'bg-purple-600 text-white'
-            : 'text-gray-600 dark:text-slate-300 hover:bg-gray-50 dark:hover:bg-slate-800'"
-          @click="viewMode = 'table'"
-        >
-          Jadval
+          type="button"
+          class="excel-btn inline-flex items-center gap-2 px-4 py-1.5 text-sm font-medium rounded-lg relative overflow-hidden disabled:cursor-not-allowed"
+          :disabled="isExporting"
+          @click="downloadExcel">
+          <span class="excel-btn__bg"></span>
+          <span
+            v-if="isExporting"
+            class="excel-btn__progress"
+            :style="{ width: `${Math.max(exportProgress, 3)}%` }"
+          ></span>
+          <span
+            v-if="isExporting && exportProgress === 0"
+            class="excel-btn__shimmer"
+            aria-hidden="true"
+          ></span>
+
+          <FileSpreadsheet v-if="!isExporting" class="relative w-4 h-4 text-white" />
+          <Loader2 v-else class="relative w-4 h-4 text-white animate-spin" />
+
+          <span class="relative text-white tabular-nums">
+            <template v-if="!isExporting">Excel yuklab olish</template>
+            <template v-else-if="exportProgress === 0">Tayyorlanmoqda...</template>
+            <template v-else>Yuklanmoqda {{ exportProgress }}%</template>
+          </span>
         </button>
-        <button
-          class="px-4 py-1.5 text-sm font-medium rounded-md transition-colors"
-          :class="viewMode === 'chart'
-            ? 'bg-purple-600 text-white'
-            : 'text-gray-600 dark:text-slate-300 hover:bg-gray-50 dark:hover:bg-slate-800'"
-          @click="viewMode = 'chart'"
-        >
-          Diagramma
-        </button>
+        <div class="flex items-center gap-2 bg-white dark:bg-slate-900 rounded-lg border border-gray-200 dark:border-slate-700 p-1">
+          <button
+            class="px-4 py-1.5 text-sm font-medium rounded-md transition-colors"
+            :class="viewMode === 'table'
+              ? 'bg-purple-600 text-white'
+              : 'text-gray-600 dark:text-slate-300 hover:bg-gray-50 dark:hover:bg-slate-800'"
+            @click="viewMode = 'table'"
+          >
+            Jadval
+          </button>
+          <button
+            class="px-4 py-1.5 text-sm font-medium rounded-md transition-colors"
+            :class="viewMode === 'chart'
+              ? 'bg-purple-600 text-white'
+              : 'text-gray-600 dark:text-slate-300 hover:bg-gray-50 dark:hover:bg-slate-800'"
+            @click="viewMode = 'chart'"
+          >
+            Diagramma
+          </button>
+        </div>
       </div>
     </div>
 
@@ -108,11 +136,12 @@
                   <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 dark:text-slate-400 uppercase tracking-wider">Karta</th>
                   <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 dark:text-slate-400 uppercase tracking-wider min-w-[220px]">Manzil</th>
                   <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 dark:text-slate-400 uppercase tracking-wider">Holat</th>
+                  <th class="px-4 py-3 text-center text-xs font-semibold text-gray-500 dark:text-slate-400 uppercase tracking-wider">Excel</th>
                 </tr>
               </thead>
               <tbody class="divide-y divide-gray-100 dark:divide-slate-800">
                 <tr v-if="atmStore.items.length === 0">
-                  <td colspan="10" class="px-4 py-10">
+                  <td colspan="11" class="px-4 py-10">
                     <EmptyState message="Hech qanday ATM topilmadi" />
                   </td>
                 </tr>
@@ -148,6 +177,18 @@
                       <span class="w-1.5 h-1.5 rounded-full" :class="STATUS_DOT_CLASSES[statusToVariant(atm.status)]"></span>
                       {{ statusToLabel(atm.status) }}
                     </span>
+                  </td>
+                  <td class="px-4 py-3 text-center">
+                    <button
+                      type="button"
+                      class="inline-flex items-center justify-center w-8 h-8 rounded-lg text-green-600 dark:text-green-400 hover:bg-green-50 dark:hover:bg-green-500/15 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                      :disabled="rowExports.has(atm.id)"
+                      :title="`${atm.terminal_id || atm.name} - Excel yuklab olish`"
+                      @click.stop="downloadAtmExcel(atm)"
+                    >
+                      <Loader2 v-if="rowExports.has(atm.id)" class="w-4 h-4 animate-spin" />
+                      <FileDown v-else class="w-4 h-4" />
+                    </button>
                   </td>
                 </tr>
               </tbody>
@@ -345,6 +386,9 @@ import DonutChart from '@/components/charts/DonutChart.vue';
 import DualAxisChart from '@/components/charts/DualAxisChart.vue';
 import HorizontalBarChart from '@/components/charts/HorizontalBarChart.vue';
 import AtmDetailModal from '@/components/monitoring/AtmDetailModal.vue';
+import { FileDown, Loader2, FileSpreadsheet } from 'lucide-vue-next';
+import { atmService } from '@/services/atmService';
+import { notify } from '@/utils/notify';
 import type { AtmListItem } from '@/types/api';
 import { STATUS_BADGE_CLASSES, STATUS_DOT_CLASSES, statusToLabel, statusToVariant } from '@/types';
 import { formatPercent, safePercentage } from '@/utils/format';
@@ -365,10 +409,69 @@ const selectedCardType = ref('');
 
 const atmModalOpen = ref(false);
 const selectedAtm = ref<AtmListItem | null>(null);
+const isExporting = ref(false);
+const exportProgress = ref(0);
+const rowExports = ref(new Set<number>());
 
 function openAtmDetail(atm: AtmListItem): void {
   selectedAtm.value = atm;
   atmModalOpen.value = true;
+}
+
+async function downloadAtmExcel(atm: AtmListItem): Promise<void> {
+  if (rowExports.value.has(atm.id)) return;
+  rowExports.value.add(atm.id);
+  try {
+    const { blob, filename } = await atmService.exportSingle(atm.id);
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(url);
+    notify.success(`${filename} yuklab olindi`);
+  } catch {
+    notify.error("Excel faylni yuklab bo'lmadi");
+  } finally {
+    rowExports.value.delete(atm.id);
+  }
+}
+
+async function downloadExcel(): Promise<void> {
+  if (isExporting.value) return;
+  isExporting.value = true;
+  exportProgress.value = 0;
+  try {
+    const { blob, filename } = await atmService.exportExcel(
+      {
+        search: atmStore.filters.search || undefined,
+        status: atmStore.filters.status || undefined,
+        region: atmStore.filters.region || undefined,
+        card_type: atmStore.filters.cardType || undefined,
+        model: atmStore.filters.model || undefined,
+        is_active: atmStore.filters.isActive ?? undefined
+      },
+      (percent) => {
+        exportProgress.value = percent;
+      }
+    );
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(url);
+    notify.success('Excel fayl muvaffaqiyatli yuklab olindi');
+  } catch {
+    notify.error("Excel faylni yuklab bo'lmadi");
+  } finally {
+    isExporting.value = false;
+    exportProgress.value = 0;
+  }
 }
 
 let searchDebounce: ReturnType<typeof setTimeout> | null = null;
@@ -584,3 +687,71 @@ onRefresh(() => {
   }
 });
 </script>
+
+<style scoped>
+.excel-btn {
+  color: #ffffff;
+  box-shadow:
+    0 4px 14px -2px rgba(16, 185, 129, 0.35),
+    0 2px 4px -1px rgba(16, 185, 129, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  transition: transform 0.15s ease, box-shadow 0.2s ease, filter 0.2s ease;
+}
+.excel-btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow:
+    0 8px 22px -4px rgba(16, 185, 129, 0.5),
+    0 4px 8px -2px rgba(16, 185, 129, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.25);
+  filter: brightness(1.05);
+}
+.excel-btn:active:not(:disabled) {
+  transform: translateY(0);
+  filter: brightness(0.98);
+}
+.excel-btn:focus-visible {
+  outline: 2px solid rgba(16, 185, 129, 0.6);
+  outline-offset: 2px;
+}
+.excel-btn:disabled {
+  opacity: 0.9;
+  transform: none;
+}
+
+.excel-btn__bg {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, #10b981 0%, #059669 60%, #047857 100%);
+  z-index: 0;
+}
+
+.excel-btn__progress {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.28) 0%, rgba(255, 255, 255, 0.12) 100%);
+  transition: width 0.25s ease;
+  z-index: 0;
+  border-right: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+.excel-btn__shimmer {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    100deg,
+    transparent 20%,
+    rgba(255, 255, 255, 0.28) 50%,
+    transparent 80%
+  );
+  transform: translateX(-100%);
+  animation: excel-shimmer 1.6s linear infinite;
+  z-index: 0;
+}
+
+@keyframes excel-shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+</style>
