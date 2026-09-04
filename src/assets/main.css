@@ -2,96 +2,654 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ============================================================
+   AI PORTAL PALETTE — CSS variables (light + dark)
+============================================================ */
+
+/* DARK theme (default when html.dark) */
+:root {
+  --ai-bg-outer: radial-gradient(ellipse at 50% -10%, #0b1e42 0%, #050c1f 45%, #020617 100%);
+
+  --ai-panel-from: rgba(15, 40, 90, 0.55);
+  --ai-panel-to:   rgba(3, 12, 34, 0.75);
+  --ai-panel-solid: rgba(11, 30, 66, 0.75);
+
+  --ai-input-bg: rgba(15, 40, 90, 0.35);
+  --ai-input-bg-strong: rgba(30, 58, 138, 0.55);
+
+  --ai-border: rgba(96, 165, 250, 0.22);
+  --ai-border-strong: rgba(96, 165, 250, 0.45);
+
+  --ai-text-1: #f8fafc;
+  --ai-text-2: rgba(226, 232, 240, 0.95);
+  --ai-text-3: rgba(203, 213, 225, 0.85);
+  --ai-text-4: rgba(148, 163, 184, 0.75);
+
+  --ai-placeholder: rgba(148, 163, 184, 0.6);
+
+  --ai-hover: rgba(59, 130, 246, 0.12);
+  --ai-hover-strong: rgba(59, 130, 246, 0.2);
+
+  --ai-active-from: rgba(59, 130, 246, 0.28);
+  --ai-active-to:   rgba(129, 140, 248, 0.18);
+  --ai-active-text: #93c5fd;
+  --ai-accent: #38bdf8;
+  --ai-accent-2: #60a5fa;
+
+  --ai-shadow-sm: 0 1px 2px 0 rgba(2, 6, 23, 0.4), 0 6px 20px -8px rgba(59, 130, 246, 0.15);
+  --ai-shadow-md: 0 4px 6px -1px rgba(2, 6, 23, 0.5), 0 10px 30px -10px rgba(59, 130, 246, 0.25);
+  --ai-shadow-lg: 0 10px 15px -3px rgba(2, 6, 23, 0.6), 0 20px 40px -12px rgba(59, 130, 246, 0.3);
+
+  --ai-scroll-track: rgba(2, 6, 23, 0.6);
+  --ai-scroll-thumb: rgba(59, 130, 246, 0.35);
+  --ai-scroll-thumb-hover: rgba(96, 165, 250, 0.55);
+}
+
+/* LIGHT theme — same aesthetic, lighter palette */
+html:not(.dark) {
+  --ai-bg-outer: radial-gradient(ellipse at 50% -10%, #dbeafe 0%, #eff6ff 45%, #ffffff 100%);
+
+  --ai-panel-from: rgba(255, 255, 255, 0.88);
+  --ai-panel-to:   rgba(239, 246, 255, 0.9);
+  --ai-panel-solid: rgba(255, 255, 255, 0.95);
+
+  --ai-input-bg: rgba(255, 255, 255, 0.9);
+  --ai-input-bg-strong: rgba(219, 234, 254, 0.7);
+
+  --ai-border: rgba(59, 130, 246, 0.22);
+  --ai-border-strong: rgba(37, 99, 235, 0.5);
+
+  --ai-text-1: #0f172a;
+  --ai-text-2: #1e293b;
+  --ai-text-3: #475569;
+  --ai-text-4: #64748b;
+
+  --ai-placeholder: rgba(100, 116, 139, 0.6);
+
+  --ai-hover: rgba(59, 130, 246, 0.08);
+  --ai-hover-strong: rgba(59, 130, 246, 0.15);
+
+  --ai-active-from: rgba(59, 130, 246, 0.14);
+  --ai-active-to:   rgba(129, 140, 248, 0.08);
+  --ai-active-text: #2563eb;
+  --ai-accent: #2563eb;
+  --ai-accent-2: #1e40af;
+
+  --ai-shadow-sm: 0 1px 2px 0 rgba(15, 23, 42, 0.08), 0 6px 18px -8px rgba(59, 130, 246, 0.2);
+  --ai-shadow-md: 0 4px 8px -1px rgba(15, 23, 42, 0.1), 0 12px 32px -10px rgba(59, 130, 246, 0.28);
+  --ai-shadow-lg: 0 12px 20px -3px rgba(15, 23, 42, 0.12), 0 24px 48px -12px rgba(59, 130, 246, 0.35);
+
+  --ai-scroll-track: rgba(219, 234, 254, 0.6);
+  --ai-scroll-thumb: rgba(59, 130, 246, 0.4);
+  --ai-scroll-thumb-hover: rgba(37, 99, 235, 0.6);
+}
+
 @layer base {
-  html {
-    color-scheme: light;
-  }
-  html.dark {
-    color-scheme: dark;
-  }
+  html { color-scheme: light; }
+  html.dark { color-scheme: dark; }
   body {
-    @apply bg-slate-100 text-slate-900 antialiased transition-colors duration-200;
+    background: var(--ai-bg-outer);
+    color: var(--ai-text-1);
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
-  }
-  html.dark body {
-    @apply bg-slate-950 text-slate-100;
+    -webkit-font-smoothing: antialiased;
+    min-height: 100vh;
+    transition: background 0.4s ease, color 0.4s ease;
   }
 
-  html.dark ::-webkit-scrollbar {
+  ::-webkit-scrollbar {
     width: 10px;
     height: 10px;
   }
-  html.dark ::-webkit-scrollbar-track {
-    background: rgb(15 23 42);
+  ::-webkit-scrollbar-track {
+    background: var(--ai-scroll-track);
   }
-  html.dark ::-webkit-scrollbar-thumb {
-    background: rgb(51 65 85);
+  ::-webkit-scrollbar-thumb {
+    background: var(--ai-scroll-thumb);
     border-radius: 8px;
   }
-  html.dark ::-webkit-scrollbar-thumb:hover {
-    background: rgb(71 85 105);
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--ai-scroll-thumb-hover);
+  }
+
+  /* ==== Native <select> / <option> — force AI palette ==== */
+  select {
+    color: var(--ai-text-1);
+    /* Custom chevron arrow */
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2360a5fa' stroke-width='2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M19 9l-7 7-7-7'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    background-size: 1rem;
+    padding-right: 2.25rem;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+  }
+  html:not(.dark) select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%232563eb' stroke-width='2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M19 9l-7 7-7-7'/%3E%3C/svg%3E");
+  }
+
+  option,
+  select option {
+    background-color: #0b1e42;
+    color: #f1f5f9;
+    padding: 0.5rem;
+  }
+  html:not(.dark) option,
+  html:not(.dark) select option {
+    background-color: #ffffff;
+    color: #0f172a;
+  }
+  option:checked,
+  option:hover,
+  select option:checked,
+  select option:hover {
+    background-color: #1e40af;
+    color: #ffffff;
+  }
+  html:not(.dark) option:checked,
+  html:not(.dark) option:hover {
+    background-color: #dbeafe;
+    color: #1e3a8a;
   }
 }
 
+/* ============================================================
+   GLOBAL OVERRIDES — remap Tailwind classes to AI palette
+   Works for both light and dark via CSS variables
+============================================================ */
 @layer utilities {
-  html:not(.dark) .shadow-sm {
-    box-shadow:
-      0 1px 2px 0 rgb(15 23 42 / 0.05),
-      0 1px 3px 0 rgb(15 23 42 / 0.08);
-  }
-  html:not(.dark) .shadow-md {
-    box-shadow:
-      0 4px 6px -1px rgb(15 23 42 / 0.08),
-      0 2px 4px -2px rgb(15 23 42 / 0.06);
+
+  /* Card / panel backgrounds (bg-white, dark:bg-slate-900) */
+  .bg-white,
+  .bg-slate-900,
+  .dark\:bg-slate-900,
+  .dark\:bg-slate-800,
+  html.dark .dark\:bg-slate-900,
+  html.dark .dark\:bg-slate-800 {
+    background-color: transparent;
+    background-image: linear-gradient(140deg, var(--ai-panel-from) 0%, var(--ai-panel-to) 100%);
+    backdrop-filter: blur(8px);
+    transition: background 0.4s ease;
   }
 
+  /* Sub-panels / table headers */
+  .bg-gray-50,
+  .dark\:bg-slate-800\/60,
+  html.dark .dark\:bg-slate-800\/60 {
+    background-color: var(--ai-input-bg);
+    backdrop-filter: blur(6px);
+    transition: background 0.4s ease;
+  }
 
-  html:not(.dark) .text-gray-400 {
-    color: rgb(100 116 139);
+  .bg-gray-100,
+  html.dark .dark\:bg-slate-700 {
+    background-color: var(--ai-input-bg-strong);
+    transition: background 0.4s ease;
   }
-  html:not(.dark) .text-gray-500 {
-    color: rgb(71 85 105);
+
+  /* Body/page background (MainLayout used bg-gray-50 dark:bg-slate-950) */
+  .bg-slate-950,
+  .dark\:bg-slate-950,
+  html.dark .dark\:bg-slate-950 {
+    background-color: transparent !important;
   }
-  html:not(.dark) .text-gray-600 {
-    color: rgb(51 65 85);
+
+  /* Borders — all common variants */
+  .border-gray-100,
+  .border-gray-200,
+  .border-gray-700,
+  .border-slate-800,
+  .dark\:border-slate-800,
+  .dark\:border-slate-700,
+  html.dark .dark\:border-slate-800,
+  html.dark .dark\:border-slate-700 {
+    border-color: var(--ai-border) !important;
+    transition: border-color 0.4s ease;
   }
-  html:not(.dark) .text-slate-400 {
-    color: rgb(100 116 139);
+  .ring-slate-800,
+  .ring-slate-800\/60,
+  .dark\:ring-slate-800\/60 {
+    --tw-ring-color: var(--ai-border) !important;
   }
-  html:not(.dark) .text-slate-500 {
-    color: rgb(71 85 105);
+  .divide-gray-100 > * + *,
+  .dark\:divide-slate-800 > * + *,
+  html.dark .dark\:divide-slate-800 > * + * {
+    border-color: var(--ai-border) !important;
   }
+
+  /* Text colors — primary/secondary/tertiary/quaternary */
+  .text-gray-800,
+  .text-gray-100,
+  .text-slate-100,
+  .dark\:text-slate-100,
+  html.dark .dark\:text-slate-100,
+  .dark\:text-gray-100,
+  html.dark .dark\:text-gray-100 {
+    color: var(--ai-text-1) !important;
+    transition: color 0.4s ease;
+  }
+  html:not(.dark) .text-gray-100 {
+    /* When light theme and text-gray-100 is used without dark: prefix (bad practice but exists), keep dark */
+    color: var(--ai-text-1) !important;
+  }
+  .text-gray-700,
+  .text-gray-600,
+  .text-slate-300,
+  .dark\:text-slate-300,
+  html.dark .dark\:text-slate-300 {
+    color: var(--ai-text-2) !important;
+    transition: color 0.4s ease;
+  }
+  .text-gray-500,
+  .text-slate-400,
+  .dark\:text-slate-400,
+  html.dark .dark\:text-slate-400 {
+    color: var(--ai-text-3) !important;
+    transition: color 0.4s ease;
+  }
+  .text-gray-400,
+  .text-slate-500,
+  .dark\:text-slate-500,
+  html.dark .dark\:text-slate-500 {
+    color: var(--ai-text-4) !important;
+    transition: color 0.4s ease;
+  }
+
+  /* Placeholders */
+  .placeholder-gray-400::placeholder,
+  .dark\:placeholder-slate-500::placeholder,
+  html.dark .dark\:placeholder-slate-500::placeholder {
+    color: var(--ai-placeholder) !important;
+  }
+
+  /* Hover states */
+  .hover\:bg-gray-50:hover,
+  .hover\:bg-gray-100:hover,
+  .dark\:hover\:bg-slate-800:hover,
+  .dark\:hover\:bg-slate-800\/50:hover,
+  html.dark .dark\:hover\:bg-slate-800:hover,
+  html.dark .dark\:hover\:bg-slate-800\/50:hover {
+    background-color: var(--ai-hover) !important;
+  }
+
+  /* Purple accents (active sidebar items etc.) → AI blue accent */
+  .bg-purple-50,
+  .dark\:bg-purple-500\/15,
+  html.dark .dark\:bg-purple-500\/15 {
+    background-image: linear-gradient(135deg, var(--ai-active-from) 0%, var(--ai-active-to) 100%) !important;
+    background-color: transparent !important;
+    border: 1px solid var(--ai-border-strong);
+  }
+  .text-purple-700,
+  .text-purple-300,
+  .dark\:text-purple-300,
+  html.dark .dark\:text-purple-300 {
+    color: var(--ai-active-text) !important;
+  }
+  .text-purple-600,
+  .dark\:text-purple-400,
+  html.dark .dark\:text-purple-400,
+  .hover\:text-purple-600:hover,
+  .dark\:hover\:text-purple-300:hover,
+  html.dark .dark\:hover\:text-purple-300:hover {
+    color: var(--ai-accent-2) !important;
+  }
+  .bg-purple-600,
+  .dark\:bg-purple-400 {
+    background-color: var(--ai-accent) !important;
+  }
+
+  /* Focus ring override — purple → AI blue */
+  .focus\:ring-purple-500:focus {
+    --tw-ring-color: rgba(59, 130, 246, 0.5) !important;
+  }
+
+  /* Shadows */
+  .shadow-sm { box-shadow: var(--ai-shadow-sm) !important; }
+  .shadow-md { box-shadow: var(--ai-shadow-md) !important; }
+  .shadow-lg { box-shadow: var(--ai-shadow-lg) !important; }
 }
 
 @layer components {
   .card {
-    @apply bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-gray-200 dark:border-slate-800 p-6 transition-all duration-200;
+    position: relative;
+    background-image: linear-gradient(140deg, var(--ai-panel-from) 0%, var(--ai-panel-to) 100%);
+    border: 1px solid var(--ai-border);
+    backdrop-filter: blur(8px);
+    @apply rounded-xl p-6 transition-all duration-300;
+    box-shadow: var(--ai-shadow-sm);
+    overflow: hidden;
+  }
+  .card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(120deg, transparent 30%, rgba(96, 165, 250, 0.08) 50%, transparent 70%);
+    transform: translateX(-100%);
+    transition: transform 0.7s ease;
+    pointer-events: none;
   }
   .card:hover {
-    @apply shadow-md;
+    border-color: var(--ai-border-strong);
+    box-shadow: var(--ai-shadow-md);
+    transform: translateY(-2px);
+  }
+  .card:hover::before {
+    transform: translateX(100%);
   }
   .stat-value {
-    @apply text-2xl font-bold text-gray-800 dark:text-slate-100;
+    color: var(--ai-text-1);
+    @apply text-2xl font-bold tabular-nums;
+    letter-spacing: -0.02em;
   }
   .stat-label {
-    @apply text-sm font-medium text-gray-500 dark:text-slate-400;
+    color: var(--ai-text-3);
+    @apply text-sm font-medium;
+    letter-spacing: 0.02em;
   }
   .badge {
     @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
   }
   .badge-success {
-    @apply bg-green-100 text-green-800 dark:bg-green-500/15 dark:text-green-300;
+    background: rgba(34, 197, 94, 0.15);
+    color: #16a34a;
+    border: 1px solid rgba(34, 197, 94, 0.35);
   }
+  html.dark .badge-success { color: #86efac; }
   .badge-warning {
-    @apply bg-yellow-100 text-yellow-800 dark:bg-yellow-500/15 dark:text-yellow-300;
+    background: rgba(251, 191, 36, 0.15);
+    color: #b45309;
+    border: 1px solid rgba(251, 191, 36, 0.35);
   }
+  html.dark .badge-warning { color: #fcd34d; }
   .badge-danger {
-    @apply bg-red-100 text-red-800 dark:bg-red-500/15 dark:text-red-300;
+    background: rgba(239, 68, 68, 0.15);
+    color: #dc2626;
+    border: 1px solid rgba(239, 68, 68, 0.35);
   }
+  html.dark .badge-danger { color: #fca5a5; }
   .badge-info {
-    @apply bg-blue-100 text-blue-800 dark:bg-blue-500/15 dark:text-blue-300;
+    background: rgba(59, 130, 246, 0.15);
+    color: #2563eb;
+    border: 1px solid rgba(59, 130, 246, 0.35);
   }
+  html.dark .badge-info { color: #93c5fd; }
   .badge-purple {
-    @apply bg-purple-100 text-purple-800 dark:bg-purple-500/15 dark:text-purple-300;
+    background: rgba(139, 92, 246, 0.15);
+    color: #6d28d9;
+    border: 1px solid rgba(139, 92, 246, 0.35);
   }
+  html.dark .badge-purple { color: #c4b5fd; }
+}
+
+/* ============================================================
+   Ambient background (glows + tech grid)
+============================================================ */
+.app-ambient {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+.app-ambient::before,
+.app-ambient::after {
+  content: '';
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(120px);
+  opacity: 0.35;
+  mix-blend-mode: screen;
+}
+html:not(.dark) .app-ambient::before,
+html:not(.dark) .app-ambient::after {
+  mix-blend-mode: multiply;
+  opacity: 0.25;
+}
+
+.app-ambient::before {
+  width: 620px;
+  height: 620px;
+  top: -10%;
+  left: 30%;
+  background: radial-gradient(circle, #2563eb 0%, transparent 70%);
+  animation: ambient-drift-1 22s ease-in-out infinite;
+}
+html:not(.dark) .app-ambient::before {
+  background: radial-gradient(circle, #93c5fd 0%, transparent 70%);
+}
+
+.app-ambient::after {
+  width: 500px;
+  height: 500px;
+  bottom: -10%;
+  right: 5%;
+  background: radial-gradient(circle, #7c3aed 0%, transparent 70%);
+  animation: ambient-drift-2 26s ease-in-out infinite;
+}
+html:not(.dark) .app-ambient::after {
+  background: radial-gradient(circle, #ddd6fe 0%, transparent 70%);
+}
+
+.app-ambient__grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(59, 130, 246, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(59, 130, 246, 0.06) 1px, transparent 1px);
+  background-size: 60px 60px;
+  mask-image: radial-gradient(ellipse at 50% 30%, black 0%, transparent 75%);
+  -webkit-mask-image: radial-gradient(ellipse at 50% 30%, black 0%, transparent 75%);
+}
+html:not(.dark) .app-ambient__grid {
+  background-image:
+    linear-gradient(rgba(37, 99, 235, 0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(37, 99, 235, 0.08) 1px, transparent 1px);
+}
+
+@keyframes ambient-drift-1 {
+  0%, 100% { transform: translate(0, 0); }
+  50%      { transform: translate(60px, 40px); }
+}
+@keyframes ambient-drift-2 {
+  0%, 100% { transform: translate(0, 0); }
+  50%      { transform: translate(-50px, -30px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-ambient::before,
+  .app-ambient::after {
+    animation: none;
+  }
+}
+
+/* ============================================================
+   Utility helpers for polished numbers & text
+============================================================ */
+
+/* Glowing gradient number (hero stats) */
+.num-hero {
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+  background: linear-gradient(135deg, var(--ai-accent) 0%, var(--ai-accent-2) 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  filter: drop-shadow(0 2px 8px var(--ai-accent-glow, rgba(59, 130, 246, 0.3)));
+}
+html.dark .num-hero {
+  background: linear-gradient(135deg, #38bdf8 0%, #818cf8 50%, #c084fc 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+/* Solid crisp number */
+.num-solid {
+  color: var(--ai-text-1);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Small label — subtly bright, uppercase */
+.label-eyebrow {
+  color: var(--ai-text-3);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+/* ============================================================
+   Enhanced progress bar system — Primary/Info/Success/Warning/Danger
+============================================================ */
+.ai-progress-track {
+  background: rgba(59, 130, 246, 0.1);
+  border-radius: 9999px;
+  overflow: hidden;
+  position: relative;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.15);
+}
+html:not(.dark) .ai-progress-track {
+  background: rgba(148, 163, 184, 0.15);
+}
+
+.ai-progress-fill {
+  height: 100%;
+  border-radius: 9999px;
+  transition: width 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  /* default = primary */
+  background: linear-gradient(90deg, #3b82f6 0%, #6366f1 100%);
+  box-shadow:
+    0 0 12px rgba(59, 130, 246, 0.55),
+    inset 0 1px 0 rgba(255, 255, 255, 0.25);
+}
+.ai-progress-fill::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.28) 0%, transparent 55%);
+  border-radius: inherit;
+  pointer-events: none;
+}
+.ai-progress-fill::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.4) 50%, transparent 100%);
+  animation: progress-shimmer 2.4s linear infinite;
+  border-radius: inherit;
+}
+
+/* PRIMARY — deep blue → indigo */
+.ai-progress-fill--primary {
+  background: linear-gradient(90deg, #2563eb 0%, #4f46e5 50%, #6366f1 100%);
+  box-shadow:
+    0 0 14px rgba(37, 99, 235, 0.6),
+    inset 0 1px 0 rgba(255, 255, 255, 0.25);
+}
+
+/* INFO — sky → blue */
+.ai-progress-fill--info {
+  background: linear-gradient(90deg, #0ea5e9 0%, #38bdf8 50%, #60a5fa 100%);
+  box-shadow:
+    0 0 14px rgba(14, 165, 233, 0.6),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+/* SUCCESS — emerald → green */
+.ai-progress-fill--success {
+  background: linear-gradient(90deg, #059669 0%, #10b981 50%, #34d399 100%);
+  box-shadow:
+    0 0 14px rgba(16, 185, 129, 0.6),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+/* WARNING — amber → orange → yellow */
+.ai-progress-fill--warning {
+  background: linear-gradient(90deg, #d97706 0%, #f59e0b 50%, #fbbf24 100%);
+  box-shadow:
+    0 0 14px rgba(245, 158, 11, 0.6),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+/* DANGER — deep red → rose */
+.ai-progress-fill--danger {
+  background: linear-gradient(90deg, #dc2626 0%, #ef4444 50%, #f87171 100%);
+  box-shadow:
+    0 0 14px rgba(239, 68, 68, 0.6),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+/* PURPLE — violet → purple → pink */
+.ai-progress-fill--purple {
+  background: linear-gradient(90deg, #7c3aed 0%, #a855f7 50%, #c084fc 100%);
+  box-shadow:
+    0 0 14px rgba(139, 92, 246, 0.6),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+/* TEAL — cyan → teal */
+.ai-progress-fill--teal {
+  background: linear-gradient(90deg, #0d9488 0%, #14b8a6 50%, #2dd4bf 100%);
+  box-shadow:
+    0 0 14px rgba(20, 184, 166, 0.6),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+/* FLAT — no gradient, subtle blue */
+.ai-progress-fill--flat {
+  background: rgba(59, 130, 246, 0.75);
+  box-shadow: 0 0 8px rgba(59, 130, 246, 0.35);
+}
+.ai-progress-fill--flat::after { display: none; }
+
+/* Small variant (thinner track) */
+.ai-progress-track--sm { height: 6px; }
+.ai-progress-track--md { height: 8px; }
+.ai-progress-track--lg { height: 10px; }
+
+@keyframes progress-shimmer {
+  from { transform: translateX(-100%); }
+  to   { transform: translateX(100%); }
+}
+
+/* Section heading with subtle underline glow */
+.section-title {
+  color: var(--ai-text-1);
+  font-weight: 700;
+  font-size: 0.95rem;
+  letter-spacing: 0.02em;
+  position: relative;
+  padding-left: 0.75rem;
+}
+.section-title::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 15%;
+  height: 70%;
+  width: 3px;
+  border-radius: 9999px;
+  background: linear-gradient(180deg, var(--ai-accent), var(--ai-accent-2));
+  box-shadow: 0 0 8px var(--ai-accent);
+}
+
+/* Table row hover lift */
+tbody tr {
+  transition: background 0.2s ease, transform 0.15s ease;
+}
+
+/* All tabular numbers */
+[class*="tabular-nums"], .tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ai-progress-fill::after { animation: none; }
+  .card::before { display: none; }
 }

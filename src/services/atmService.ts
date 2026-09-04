@@ -2,7 +2,8 @@ import { http } from '@/api/http';
 import { ENDPOINTS } from '@/api/endpoints';
 import { fetchAllPages } from '@/api/pagination';
 import type {
-  AiAnalysisResponse,
+  AiAnalysisCreateResponse,
+  AiAnalysisJob,
   AtmDetailResponse,
   AtmFiltersResponse,
   AtmListItem,
@@ -49,11 +50,25 @@ export const atmService = {
     );
   },
 
-  async aiAnalysis(id: number | string): Promise<AiAnalysisResponse> {
-    const { data } = await http.post<AiAnalysisResponse>(
-      ENDPOINTS.atms.aiAnalysis(id),
+  async createAiAnalysis(
+    id: number | string,
+    options: { force?: boolean } = {}
+  ): Promise<AiAnalysisCreateResponse> {
+    const { data } = await http.post<AiAnalysisCreateResponse>(
+      ENDPOINTS.ai.createAnalysis(id),
       undefined,
-      { timeout: 90000 }
+      {
+        params: options.force ? { force: 'true' } : undefined,
+        timeout: 15000
+      }
+    );
+    return data;
+  },
+
+  async getAiJob(jobId: number | string): Promise<AiAnalysisJob> {
+    const { data } = await http.get<AiAnalysisJob>(
+      ENDPOINTS.ai.jobDetail(jobId),
+      { timeout: 15000 }
     );
     return data;
   },

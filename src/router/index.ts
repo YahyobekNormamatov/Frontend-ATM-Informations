@@ -47,6 +47,11 @@ const router = createRouter({
           path: '/ai-analytics',
           name: 'AiAnalytics',
           component: () => import('@/views/AiAnalyticsView.vue')
+        },
+        {
+          path: '/ai-analytics/atms',
+          name: 'AtmAiList',
+          component: () => import('@/views/AtmAiListView.vue')
         }
       ]
     }

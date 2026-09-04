@@ -1,21 +1,36 @@
 <template>
-  <div class="bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-gray-100 dark:border-slate-800 p-5 hover:shadow-md transition-shadow">
-    <h3 class="text-sm font-semibold text-gray-700 dark:text-slate-200 mb-4 tracking-wide">{{ title }}</h3>
+  <div class="donut-card">
+    <div class="donut-card__title-wrap">
+      <span class="donut-card__accent"></span>
+      <h3 class="donut-card__title">{{ title }}</h3>
+    </div>
 
     <div v-if="unavailable">
       <EmptyState :message="emptyMessage" />
     </div>
     <template v-else>
       <div class="flex items-center justify-center">
-        <div class="w-48 h-48">
+        <div class="w-52 h-52">
           <DonutChart :data="chartData" :options="chartOptions" :center-text="centerText" />
         </div>
       </div>
-      <div class="flex flex-wrap justify-center gap-x-4 gap-y-2 mt-5">
-        <div v-for="item in legend" :key="item.label" class="flex items-center gap-1.5">
-          <span class="w-2.5 h-2.5 rounded-full" :style="{ backgroundColor: item.color }"></span>
-          <span class="text-xs text-gray-600 dark:text-slate-400">{{ item.label }}</span>
-          <span class="text-xs font-semibold text-gray-800 dark:text-slate-100">{{ item.value }}{{ legendSuffix }}</span>
+      <div class="donut-card__legend">
+        <div
+          v-for="item in legend"
+          :key="item.label"
+          class="donut-card__legend-item"
+        >
+          <span
+            class="donut-card__dot"
+            :style="{
+              background: `radial-gradient(circle at 30% 30%, ${item.color}, ${item.color}66)`,
+              boxShadow: `0 0 8px ${item.color}80, inset 0 1px 0 rgba(255,255,255,0.35)`
+            }"
+          ></span>
+          <span class="donut-card__legend-label">{{ item.label }}</span>
+          <span class="donut-card__legend-value">
+            {{ item.value }}{{ legendSuffix }}
+          </span>
         </div>
       </div>
     </template>
@@ -71,3 +86,103 @@ const chartOptions: ChartOptions<'doughnut'> = {
   cutout: '72%'
 };
 </script>
+
+<style scoped>
+.donut-card {
+  position: relative;
+  background-image: linear-gradient(140deg, var(--ai-panel-from) 0%, var(--ai-panel-to) 100%);
+  border: 1px solid var(--ai-border);
+  border-radius: 16px;
+  padding: 1.35rem 1.35rem 1.15rem;
+  backdrop-filter: blur(8px);
+  box-shadow: var(--ai-shadow-sm);
+  transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+  overflow: hidden;
+  isolation: isolate;
+}
+.donut-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(120deg, transparent 30%, rgba(96, 165, 250, 0.08) 50%, transparent 70%);
+  transform: translateX(-100%);
+  transition: transform 0.7s ease;
+  pointer-events: none;
+  z-index: 0;
+}
+.donut-card:hover {
+  transform: translateY(-3px);
+  border-color: var(--ai-border-strong);
+  box-shadow: var(--ai-shadow-md);
+}
+.donut-card:hover::before {
+  transform: translateX(100%);
+}
+
+/* Title with accent bar */
+.donut-card__title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  margin-bottom: 1rem;
+  position: relative;
+  z-index: 1;
+}
+.donut-card__accent {
+  width: 3px;
+  height: 16px;
+  border-radius: 9999px;
+  background: linear-gradient(180deg, var(--ai-accent, #2563eb), var(--ai-accent-2, #60a5fa));
+  box-shadow: 0 0 8px var(--ai-accent, #2563eb);
+}
+.donut-card__title {
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ai-text-1);
+}
+
+/* Legend */
+.donut-card__legend {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem 1.1rem;
+  margin-top: 1.15rem;
+  position: relative;
+  z-index: 1;
+}
+.donut-card__legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.3rem 0.7rem;
+  border-radius: 9999px;
+  background: rgba(59, 130, 246, 0.06);
+  border: 1px solid rgba(59, 130, 246, 0.15);
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+.donut-card__legend-item:hover {
+  background: rgba(59, 130, 246, 0.12);
+  border-color: rgba(59, 130, 246, 0.35);
+}
+.donut-card__dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 9999px;
+  flex-shrink: 0;
+}
+.donut-card__legend-label {
+  font-size: 0.72rem;
+  color: var(--ai-text-3);
+  font-weight: 500;
+  letter-spacing: 0.02em;
+}
+.donut-card__legend-value {
+  font-size: 0.78rem;
+  color: var(--ai-text-1);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+</style>

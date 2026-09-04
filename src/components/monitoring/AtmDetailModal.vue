@@ -41,7 +41,6 @@
               <X class="w-5 h-5" />
             </button>
           </div>
-
           <div class="flex-1 overflow-y-auto px-6 py-5">
             <div
               v-if="atmStore.isDetailLoading && !detail"
@@ -85,8 +84,7 @@
                       <span class="text-gray-500 dark:text-slate-400">Karta turi</span>
                       <span
                         v-if="detail.general.card_type"
-                        class="px-2 py-0.5 rounded-full text-xs font-medium bg-purple-100 dark:bg-purple-500/15 text-purple-700 dark:text-purple-300"
-                      >
+                        class="px-2 py-0.5 rounded-full text-xs font-medium bg-purple-100 dark:bg-purple-500/15 text-purple-700 dark:text-purple-300">
                         {{ detail.general.card_type }}
                       </span>
                       <span v-else class="text-gray-400 dark:text-slate-500">—</span>

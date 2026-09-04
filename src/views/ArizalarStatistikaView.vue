@@ -124,6 +124,5 @@ const monthlyChartData = computed<BarLineChartData>(() => ({
 onMounted(() => {
   store.fetchAll();
 });
-
 onRefresh(() => store.fetchAll(true));
 </script>

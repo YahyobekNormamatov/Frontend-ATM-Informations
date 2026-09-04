@@ -13,7 +13,15 @@
       :on-retry="() => dashboardStore.fetchDashboard()"/>
 
     <template v-else>
-      <div class="bg-slate-900 dark:bg-slate-900 rounded-2xl p-6 text-white ring-1 ring-slate-800/60">
+      <div class="hero-panel bg-white dark:bg-slate-900 rounded-2xl p-6 text-gray-800 dark:text-slate-100 ring-1 ring-gray-200 dark:ring-slate-800/60">
+        <div class="hero-panel__bg" aria-hidden="true">
+          <div class="hero-panel__grid"></div>
+          <div class="hero-panel__orb hero-panel__orb--1"></div>
+          <div class="hero-panel__orb hero-panel__orb--2"></div>
+          <div class="hero-panel__orb hero-panel__orb--3"></div>
+          <div class="hero-panel__scan"></div>
+        </div>
+        <div class="hero-panel__content">
         <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
           <div class="lg:col-span-3">
             <div class="flex items-center justify-between mb-4">
@@ -22,23 +30,25 @@
             </div>
             <div class="flex items-center gap-8 flex-wrap">
               <div>
-                <p class="text-xs text-gray-400">Jami aylanma</p>
-                <p class="text-3xl font-bold text-yellow-400">{{ formatSumShort(totalTurnover) }}</p>
-                <p class="text-xs text-gray-500">Kirim + Chiqim UZS</p>
+                <p class="label-eyebrow">Jami aylanma</p>
+                <p class="text-3xl font-bold text-yellow-500 dark:text-yellow-400 mt-1 tabular-nums" style="letter-spacing:-0.02em; filter: drop-shadow(0 2px 8px rgba(234, 179, 8, 0.3));">
+                  {{ formatSumShort(totalTurnover) }}
+                </p>
+                <p class="text-xs text-gray-500 dark:text-slate-400 mt-1">Kirim + Chiqim UZS</p>
               </div>
               <div class="flex gap-6 text-sm flex-wrap">
                 <div class="flex items-center gap-2">
                   <span class="text-green-400 text-lg">↑</span>
                   <div>
                     <p class="text-xs text-gray-500">Kirim</p>
-                    <p class="text-gray-100 font-semibold">{{ formatSumShort(finance?.income) }}</p>
+                    <p class="text-gray-800 dark:text-gray-100 font-semibold">{{ formatSumShort(finance?.income) }}</p>
                   </div>
                 </div>
                 <div class="flex items-center gap-2">
                   <span class="text-red-400 text-lg">↓</span>
                   <div>
                     <p class="text-xs text-gray-500">Chiqim</p>
-                    <p class="text-gray-100 font-semibold">{{ formatSumShort(finance?.expense) }}</p>
+                    <p class="text-gray-800 dark:text-gray-100 font-semibold">{{ formatSumShort(finance?.expense) }}</p>
                   </div>
                 </div>
                 <div class="flex items-center gap-2">
@@ -53,14 +63,14 @@
               </div>
             </div>
           </div>
-          <div class="border-l border-gray-700 pl-6">
-            <p class="text-xs text-gray-400 uppercase tracking-wider">Tarmoq sozligi</p>
+          <div class="border-l border-gray-200 dark:border-slate-700 pl-6">
+            <p class="label-eyebrow">Tarmoq sozligi</p>
 
             <div class="flex items-baseline gap-2 mt-2">
-              <span class="text-4xl font-bold tabular-nums" :class="healthColor.text">
+              <span class="text-4xl font-bold tabular-nums" style="letter-spacing:-0.03em;" :class="healthColor.text">
                 {{ formatPercent(dashboardStore.workingPercentage) }}
               </span>
-              <span class="text-xs text-gray-500">ishlayapti</span>
+              <span class="text-xs text-gray-500 dark:text-slate-400">ishlayapti</span>
             </div>
 
             <div class="mt-2">
@@ -71,9 +81,9 @@
               <p class="text-xs text-gray-500 mt-1 leading-snug">{{ healthHint }}</p>
             </div>
 
-            <div class="mt-3 w-full h-1.5 bg-slate-800 rounded-full overflow-hidden">
+            <div class="mt-3 w-full h-1.5 ai-progress-track">
               <div
-                class="h-full transition-all duration-500 rounded-full"
+                class="ai-progress-fill"
                 :class="healthColor.bar"
                 :style="{ width: `${dashboardStore.workingPercentage}%` }"
               ></div>
@@ -94,31 +104,32 @@
           </div>
         </div>
 
-        <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-4 mt-6 pt-4 border-t border-gray-700">
-          <div>
-            <p class="text-xs text-gray-500">JAMI ATM</p>
-            <p class="text-lg font-bold">{{ summary?.total_atms ?? '—' }}</p>
+        <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-4 mt-6 pt-4 border-t border-gray-200 dark:border-slate-700">
+          <div class="mini-stat">
+            <p class="label-eyebrow">JAMI ATM</p>
+            <p class="num-solid text-xl mt-1">{{ summary?.total_atms ?? '—' }}</p>
           </div>
-          <div>
-            <p class="text-xs text-green-400">SOZ</p>
-            <p class="text-lg font-bold">{{ summary?.soz ?? '—' }}</p>
+          <div class="mini-stat">
+            <p class="label-eyebrow text-green-600 dark:text-green-400">SOZ</p>
+            <p class="num-solid text-xl mt-1">{{ summary?.soz ?? '—' }}</p>
           </div>
-          <div>
-            <p class="text-xs text-red-400">NOSOZ</p>
-            <p class="text-lg font-bold">{{ summary?.nosoz ?? '—' }}</p>
+          <div class="mini-stat">
+            <p class="label-eyebrow text-red-600 dark:text-red-400">NOSOZ</p>
+            <p class="num-solid text-xl mt-1">{{ summary?.nosoz ?? '—' }}</p>
           </div>
-          <div>
-            <p class="text-xs text-purple-400">UZCARD</p>
-            <p class="text-lg font-bold">{{ summary?.uzcard ?? '—' }}</p>
+          <div class="mini-stat">
+            <p class="label-eyebrow text-purple-600 dark:text-purple-400">UZCARD</p>
+            <p class="num-solid text-xl mt-1">{{ summary?.uzcard ?? '—' }}</p>
           </div>
-          <div>
-            <p class="text-xs text-teal-400">HUMO</p>
-            <p class="text-lg font-bold">{{ summary?.humo ?? '—' }}</p>
+          <div class="mini-stat">
+            <p class="label-eyebrow text-teal-600 dark:text-teal-400">HUMO</p>
+            <p class="num-solid text-xl mt-1">{{ summary?.humo ?? '—' }}</p>
           </div>
-          <div>
-            <p class="text-xs text-gray-500">Soz ulushi</p>
-            <p class="text-lg font-bold">{{ formatPercent(dashboardStore.workingPercentage) }}</p>
+          <div class="mini-stat">
+            <p class="label-eyebrow">Soz ulushi</p>
+            <p class="num-solid text-xl mt-1">{{ formatPercent(dashboardStore.workingPercentage) }}</p>
           </div>
+        </div>
         </div>
       </div>
 
@@ -206,12 +217,11 @@
                   </span>
                 </span>
               </div>
-              <div class="w-full h-1.5 bg-gray-100 dark:bg-slate-800 rounded-full overflow-hidden">
+              <div class="ai-progress-track ai-progress-track--sm">
                 <div
-                  class="h-full rounded-full transition-all duration-500"
+                  class="ai-progress-fill"
                   :class="regionUptimeBar(region)"
-                  :style="{ width: `${regionUptime(region)}%` }"
-                ></div>
+                  :style="{ width: `${regionUptime(region)}%` }"></div>
               </div>
             </div>
           </div>
@@ -229,9 +239,18 @@
             <p class="text-sm text-gray-500 dark:text-slate-400">Soz holatda</p>
           </div>
           <div class="flex-1 min-w-[200px]">
-            <div class="flex h-2 rounded-full overflow-hidden bg-gray-100 dark:bg-slate-800">
-              <div class="bg-green-500" :style="{ width: `${dashboardStore.workingPercentage}%` }"></div>
-              <div class="bg-red-500" :style="{ width: `${dashboardStore.faultyPercentage}%` }"></div>
+            <div class="h-2 ai-progress-track relative">
+              <div
+                class="split-fill split-fill--success"
+                :style="{ width: `${dashboardStore.workingPercentage}%` }"
+              ></div>
+              <div
+                class="split-fill split-fill--danger"
+                :style="{
+                  left: `${Math.max(0, dashboardStore.workingPercentage - 1.5)}%`,
+                  width: `${dashboardStore.faultyPercentage + 1.5}%`
+                }"
+              ></div>
             </div>
             <div class="flex flex-wrap gap-4 mt-3 text-xs">
               <div class="flex items-center gap-1.5">
@@ -297,24 +316,23 @@ const healthHint = computed(() => {
 const healthColor = computed(() => {
   const p = dashboardStore.workingPercentage;
   if (p >= 85) return {
-    text: 'text-green-400',
+    text: 'text-green-600 dark:text-green-400',
     dot: 'bg-green-400',
-    bar: 'bg-green-500'
+    bar: 'ai-progress-fill--success'
   };
   if (p >= 70) return {
-    text: 'text-yellow-400',
+    text: 'text-yellow-600 dark:text-yellow-400',
     dot: 'bg-yellow-400',
-    bar: 'bg-yellow-500'
+    bar: 'ai-progress-fill--warning'
   };
   return {
-    text: 'text-red-400',
+    text: 'text-red-600 dark:text-red-400',
     dot: 'bg-red-400',
-    bar: 'bg-red-500'
+    bar: 'ai-progress-fill--danger'
   };
 });
 
 const hasCardData = computed(() => (summary.value?.uzcard ?? 0) + (summary.value?.humo ?? 0) > 0);
-
 const cardMixData = computed(() => {
   const uzcard = summary.value?.uzcard ?? 0;
   const humo = summary.value?.humo ?? 0;
@@ -345,9 +363,9 @@ function regionUptimeColor(r: DashboardRegionStat): string {
 }
 function regionUptimeBar(r: DashboardRegionStat): string {
   const u = regionUptime(r);
-  if (u >= 80) return 'bg-green-500';
-  if (u >= 50) return 'bg-yellow-500';
-  return 'bg-red-500';
+  if (u >= 80) return 'ai-progress-fill--success';
+  if (u >= 50) return 'ai-progress-fill--warning';
+  return 'ai-progress-fill--danger';
 }
 
 onMounted(() => {
@@ -358,20 +376,213 @@ onRefresh(() => dashboardStore.fetchDashboard());
 </script>
 
 <style scoped>
+/* Hero panel — AI Analytics style animated background */
+.hero-panel {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+.hero-panel__content {
+  position: relative;
+  z-index: 2;
+}
+.hero-panel__bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+/* Tech grid pattern */
+.hero-panel__grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(59, 130, 246, 0.07) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(59, 130, 246, 0.07) 1px, transparent 1px);
+  background-size: 48px 48px;
+  mask-image: radial-gradient(ellipse at 50% 40%, black 0%, transparent 75%);
+  -webkit-mask-image: radial-gradient(ellipse at 50% 40%, black 0%, transparent 75%);
+  animation: hero-grid-pan 30s linear infinite;
+}
+html:not(.dark) .hero-panel__grid {
+  background-image:
+    linear-gradient(rgba(37, 99, 235, 0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(37, 99, 235, 0.08) 1px, transparent 1px);
+}
+
+/* Animated glow orbs */
+.hero-panel__orb {
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(70px);
+  mix-blend-mode: screen;
+  opacity: 0.55;
+}
+html:not(.dark) .hero-panel__orb {
+  mix-blend-mode: multiply;
+  opacity: 0.3;
+}
+
+.hero-panel__orb--1 {
+  width: 420px;
+  height: 420px;
+  top: -30%;
+  left: 15%;
+  background: radial-gradient(circle, #2563eb 0%, transparent 65%);
+  animation: hero-orb-drift-1 20s ease-in-out infinite;
+}
+html:not(.dark) .hero-panel__orb--1 {
+  background: radial-gradient(circle, #93c5fd 0%, transparent 65%);
+}
+
+.hero-panel__orb--2 {
+  width: 360px;
+  height: 360px;
+  bottom: -20%;
+  right: 20%;
+  background: radial-gradient(circle, #7c3aed 0%, transparent 65%);
+  animation: hero-orb-drift-2 26s ease-in-out infinite;
+}
+html:not(.dark) .hero-panel__orb--2 {
+  background: radial-gradient(circle, #ddd6fe 0%, transparent 65%);
+}
+
+.hero-panel__orb--3 {
+  width: 300px;
+  height: 300px;
+  top: 40%;
+  right: -10%;
+  background: radial-gradient(circle, #0ea5e9 0%, transparent 65%);
+  animation: hero-orb-drift-3 22s ease-in-out infinite 3s;
+}
+html:not(.dark) .hero-panel__orb--3 {
+  background: radial-gradient(circle, #a5f3fc 0%, transparent 65%);
+}
+
+/* Slow horizontal scan line */
+.hero-panel__scan {
+  position: absolute;
+  left: -20%;
+  right: -20%;
+  top: 50%;
+  height: 1px;
+  background: linear-gradient(90deg,
+    transparent 0%,
+    rgba(96, 165, 250, 0.55) 50%,
+    transparent 100%
+  );
+  animation: hero-scan 8s ease-in-out infinite;
+  opacity: 0.6;
+}
+
+@keyframes hero-grid-pan {
+  from { background-position: 0 0, 0 0; }
+  to   { background-position: 48px 48px, 48px 48px; }
+}
+
+@keyframes hero-orb-drift-1 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50%      { transform: translate(60px, 30px) scale(1.08); }
+}
+@keyframes hero-orb-drift-2 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50%      { transform: translate(-50px, -25px) scale(1.1); }
+}
+@keyframes hero-orb-drift-3 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50%      { transform: translate(-40px, 30px) scale(1.05); }
+}
+
+@keyframes hero-scan {
+  0%   { transform: translateY(-140px); opacity: 0; }
+  20%  { opacity: 0.6; }
+  50%  { transform: translateY(0); opacity: 0.9; }
+  80%  { opacity: 0.6; }
+  100% { transform: translateY(140px); opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-panel__grid,
+  .hero-panel__orb,
+  .hero-panel__scan {
+    animation: none;
+  }
+}
+
+/* Mini stat inside hero widget */
+.mini-stat {
+  padding: 0.35rem 0.65rem 0.5rem;
+  border-radius: 10px;
+  transition: background 0.25s ease, transform 0.2s ease;
+}
+.mini-stat:hover {
+  background: rgba(59, 130, 246, 0.08);
+  transform: translateY(-1px);
+}
+
+/* Network health split bar — two rounded segments */
+.split-fill {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  border-radius: 9999px;
+  transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1),
+              left 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+}
+.split-fill::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.3) 0%, transparent 55%);
+  border-radius: inherit;
+}
+
+.split-fill--success {
+  left: 0;
+  background: linear-gradient(90deg, #059669 0%, #10b981 50%, #34d399 100%);
+  box-shadow:
+    0 0 14px rgba(16, 185, 129, 0.6),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  z-index: 1;
+}
+
+.split-fill--danger {
+  background: linear-gradient(90deg, #dc2626 0%, #ef4444 50%, #f87171 100%);
+  box-shadow:
+    0 0 14px rgba(239, 68, 68, 0.65),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  z-index: 2;
+}
+
+.custom-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(59, 130, 246, 0.4) transparent;
+}
 .custom-scroll::-webkit-scrollbar {
-  width: 6px;
+  width: 6px !important;
+  height: 6px !important;
 }
 .custom-scroll::-webkit-scrollbar-track {
-  background: transparent;
+  background: transparent !important;
+  margin: 4px 0;
 }
 .custom-scroll::-webkit-scrollbar-thumb {
-  background: rgb(203 213 225 / 0.6);
-  border-radius: 3px;
-}
-:global(html.dark) .custom-scroll::-webkit-scrollbar-thumb {
-  background: rgb(51 65 85 / 0.8);
+  background: rgba(59, 130, 246, 0.4) !important;
+  border-radius: 9999px !important;
 }
 .custom-scroll::-webkit-scrollbar-thumb:hover {
-  background: rgb(148 163 184 / 0.8);
+  background: rgba(96, 165, 250, 0.65) !important;
+}
+:global(html:not(.dark)) .custom-scroll {
+  scrollbar-color: rgba(37, 99, 235, 0.35) transparent;
+}
+:global(html:not(.dark)) .custom-scroll::-webkit-scrollbar-thumb {
+  background: rgba(37, 99, 235, 0.35) !important;
+}
+:global(html:not(.dark)) .custom-scroll::-webkit-scrollbar-thumb:hover {
+  background: rgba(37, 99, 235, 0.55) !important;
 }
 </style>

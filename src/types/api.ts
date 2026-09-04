@@ -28,7 +28,6 @@ export interface AtmDetailGeneral {
   card_type: string;
   model: string;
 }
-
 export interface AtmDetailTechnical {
   merchant_id: string;
   terminal_id: string;
@@ -78,8 +77,25 @@ export interface AtmDetailResponse {
   yearly_statistics?: AtmYearlyStatistic[];
 }
 
-export interface AiAnalysisResponse {
-  analysis: string;
+export type AiAnalysisStatus = 'PENDING' | 'RUNNING' | 'COMPLETED' | 'FAILED';
+
+export interface AiAnalysisCreateResponse {
+  job_id: number;
+  status: AiAnalysisStatus;
+  result?: string;
+  cached?: boolean;
+}
+
+export interface AiAnalysisJob {
+  id: number;
+  atm: number;
+  status: AiAnalysisStatus;
+  result: string;
+  error: string;
+  created_at: string;
+  started_at: string | null;
+  completed_at: string | null;
+  duration_seconds: number | null;
 }
 
 export interface FilterOption {

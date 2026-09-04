@@ -143,16 +143,50 @@ export const useAtmStore = defineStore('atm', () => {
     }
   }
 
+  const POLL_INTERVAL_MS = 2500;
+  const POLL_MAX_MS = 5 * 60 * 1000;
+
+  function sleep(ms: number): Promise<void> {
+    return new Promise((resolve) => setTimeout(resolve, ms));
+  }
+
   async function fetchAiAnalysis(id: number, force = false): Promise<string | null> {
     if (!force && aiAnalysisCache.value.has(id)) {
       return aiAnalysisCache.value.get(id) ?? null;
     }
+
     isAiAnalysisLoading.value = true;
     aiAnalysisError.value = null;
+
     try {
-      const { analysis } = await atmService.aiAnalysis(id);
-      aiAnalysisCache.value.set(id, analysis);
-      return analysis;
+      const created = await atmService.createAiAnalysis(id, { force });
+
+      if (created.status === 'COMPLETED' && created.result) {
+        aiAnalysisCache.value.set(id, created.result);
+        return created.result;
+      }
+
+      const jobId = created.job_id;
+      const startedAt = Date.now();
+
+      while (Date.now() - startedAt < POLL_MAX_MS) {
+        await sleep(POLL_INTERVAL_MS);
+
+        const job = await atmService.getAiJob(jobId);
+
+        if (job.status === 'COMPLETED') {
+          aiAnalysisCache.value.set(id, job.result);
+          return job.result;
+        }
+
+        if (job.status === 'FAILED') {
+          aiAnalysisError.value = job.error || "AI tahlilini olib bo'lmadi.";
+          return null;
+        }
+      }
+
+      aiAnalysisError.value = 'AI tahlili juda uzoq vaqt oldi. Keyinroq qayta urinib ko\'ring.';
+      return null;
     } catch (err) {
       aiAnalysisError.value = extractErrorMessage(err) || "AI tahlilini olib bo'lmadi.";
       return null;

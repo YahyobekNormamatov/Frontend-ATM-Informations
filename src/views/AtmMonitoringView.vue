@@ -73,40 +73,34 @@
         </div>
       </div>
 
-      <div class="bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-gray-100 dark:border-slate-800 p-4">
+      <div class="bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-gray-100 dark:border-slate-800 p-4 relative z-30">
         <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
           <input
             type="text"
             placeholder="TID, Seriya raqam bo'yicha qidirish..."
-            class="px-4 py-2.5 text-sm bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 text-gray-800 dark:text-slate-100 placeholder-gray-400 dark:placeholder-slate-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+            class="px-4 py-2.5 text-sm bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 text-gray-800 dark:text-slate-100 placeholder-gray-400 dark:placeholder-slate-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             v-model="searchQuery"
           />
-          <select
-            class="px-4 py-2.5 text-sm border border-gray-200 dark:border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white dark:bg-slate-800 text-gray-800 dark:text-slate-100"
+          <AiSelect
             v-model="selectedRegion"
+            :options="regionSelectOptions"
+            placeholder="Barcha viloyatlar"
+            searchable
+            search-placeholder="Viloyat qidiring..."
             @change="applyFilters"
-          >
-            <option value="">Barcha viloyatlar</option>
-            <option v-for="region in regionOptions" :key="region.value" :value="region.value">{{ region.label }}</option>
-          </select>
-          <select
-            class="px-4 py-2.5 text-sm border border-gray-200 dark:border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white dark:bg-slate-800 text-gray-800 dark:text-slate-100"
+          />
+          <AiSelect
             v-model="selectedCardType"
+            :options="cardTypeOptions"
+            placeholder="Barcha karta turlari"
             @change="applyFilters"
-          >
-            <option value="">Barcha karta turlari</option>
-            <option value="UZCARD">UZCARD</option>
-            <option value="HUMO">HUMO</option>
-          </select>
-          <select
-            class="px-4 py-2.5 text-sm border border-gray-200 dark:border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white dark:bg-slate-800 text-gray-800 dark:text-slate-100"
-            v-model="selectedTab"
-            @change="selectTab(selectedTab)"
-          >
-            <option value="all">Holati - barchasi</option>
-            <option value="SOZ">Soz</option>
-            <option value="NOSOZ">Nosoz</option>
-          </select>
+          />
+          <AiSelect
+            :model-value="selectedTab"
+            :options="statusOptions"
+            placeholder="Holati - barchasi"
+            @update:model-value="(v: string) => selectTab(v as StatusTab)"
+          />
         </div>
       </div>
 
@@ -386,6 +380,7 @@ import DonutChart from '@/components/charts/DonutChart.vue';
 import DualAxisChart from '@/components/charts/DualAxisChart.vue';
 import HorizontalBarChart from '@/components/charts/HorizontalBarChart.vue';
 import AtmDetailModal from '@/components/monitoring/AtmDetailModal.vue';
+import AiSelect from '@/components/common/AiSelect.vue';
 import { FileDown, Loader2, FileSpreadsheet } from 'lucide-vue-next';
 import { atmService } from '@/services/atmService';
 import { notify } from '@/utils/notify';
@@ -496,6 +491,23 @@ const regionOptions = computed(() => {
     .sort((a, b) => a.localeCompare(b, 'uz'))
     .map((r) => ({ value: r, label: r }));
 });
+
+const regionSelectOptions = computed(() => [
+  { value: '', label: 'Barcha viloyatlar' },
+  ...regionOptions.value
+]);
+
+const cardTypeOptions = [
+  { value: '', label: 'Barcha karta turlari' },
+  { value: 'UZCARD', label: 'UZCARD' },
+  { value: 'HUMO', label: 'HUMO' }
+];
+
+const statusOptions = [
+  { value: 'all', label: 'Holati - barchasi' },
+  { value: 'SOZ', label: 'Soz' },
+  { value: 'NOSOZ', label: 'Nosoz' }
+];
 
 function getStatusBadgeClass(key: StatusTab): string {
   const classes: Record<StatusTab, string> = {

@@ -3,7 +3,6 @@ const MILLION = 1_000_000;
 
 export function formatSumShort(value: number | null | undefined): string {
   if (value === null || value === undefined || Number.isNaN(value)) return '—';
-
   const abs = Math.abs(value);
   const sign = value < 0 ? '-' : '';
 
@@ -20,6 +19,7 @@ export function formatNumber(value: number | null | undefined): string {
   if (value === null || value === undefined || Number.isNaN(value)) return '—';
   return value.toLocaleString('uz-UZ');
 }
+
 
 export function formatPercent(value: number | null | undefined, digits = 1): string {
   if (value === null || value === undefined || Number.isNaN(value)) return '—';

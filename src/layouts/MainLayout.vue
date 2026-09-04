@@ -1,12 +1,19 @@
 <template>
-  <div class="flex min-h-screen bg-gray-50 dark:bg-slate-950 transition-colors duration-200">
-    <Sidebar />
-    <div class="flex-1 ml-64 min-w-0">
-      <Navbar />
-      <main class="p-6">
-        <router-view />
-      </main>
-      <FloatingBadge />
+  <div class="relative min-h-screen">
+    <!-- Global ambient background (glows + grid) -->
+    <div class="app-ambient" aria-hidden="true">
+      <div class="app-ambient__grid" />
+    </div>
+
+    <div class="relative z-10 flex min-h-screen">
+      <Sidebar />
+      <div class="flex-1 ml-64 min-w-0">
+        <Navbar />
+        <main class="p-6">
+          <router-view />
+        </main>
+        <FloatingBadge />
+      </div>
     </div>
   </div>
 </template>

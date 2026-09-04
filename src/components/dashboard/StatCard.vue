@@ -1,23 +1,23 @@
 <template>
-  <div class="bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-gray-100 dark:border-slate-800 p-5 hover:shadow-md transition-all duration-200">
+  <div class="stat-card">
     <div class="flex items-start justify-between mb-3">
-      <div>
-        <p class="text-sm text-gray-500 dark:text-slate-400 font-medium">{{ title }}</p>
-        <p class="text-2xl font-bold text-gray-800 dark:text-slate-100 mt-1">{{ value }}</p>
+      <div class="min-w-0">
+        <p class="label-eyebrow">{{ title }}</p>
+        <p class="num-solid text-3xl mt-1.5">{{ value }}</p>
       </div>
-      <div class="w-10 h-10 rounded-lg flex items-center justify-center" :class="[iconBg, darkIconBg]">
+      <div class="stat-card__icon" :class="[iconBg, darkIconBg]">
         <component :is="icon" :size="20" :class="iconColor" />
       </div>
     </div>
 
     <div v-if="progress !== undefined" class="mt-2">
-      <div class="flex items-center justify-between text-xs text-gray-500 dark:text-slate-400 mb-1">
-        <span>{{ progressLabel || '' }}</span>
-        <span class="font-medium" :class="progressTextColor">{{ progress }}%</span>
+      <div class="flex items-center justify-between text-xs mb-1.5">
+        <span class="text-gray-500 dark:text-slate-400">{{ progressLabel || '' }}</span>
+        <span class="font-bold tabular-nums" :class="progressTextColor">{{ progress }}%</span>
       </div>
-      <div class="w-full h-1.5 bg-gray-100 dark:bg-slate-800 rounded-full overflow-hidden">
+      <div class="ai-progress-track w-full h-1.5">
         <div
-          class="h-full rounded-full transition-all duration-500"
+          class="ai-progress-fill"
           :class="progressBarColor"
           :style="{ width: `${progress}%` }"
         ></div>
@@ -52,14 +52,14 @@ const props = withDefaults(defineProps<Props>(), {
 });
 
 const progressBarColor = computed(() => {
-  if (!props.progress) return 'bg-purple-600';
-  if (props.progress >= 80) return 'bg-green-500';
-  if (props.progress >= 50) return 'bg-yellow-500';
-  return 'bg-red-500';
+  if (!props.progress) return 'ai-progress-fill--primary';
+  if (props.progress >= 80) return 'ai-progress-fill--success';
+  if (props.progress >= 50) return 'ai-progress-fill--warning';
+  return 'ai-progress-fill--danger';
 });
 
 const progressTextColor = computed(() => {
-  if (!props.progress) return 'text-purple-600 dark:text-purple-300';
+  if (!props.progress) return 'text-blue-600 dark:text-blue-300';
   if (props.progress >= 80) return 'text-green-600 dark:text-green-300';
   if (props.progress >= 50) return 'text-yellow-600 dark:text-yellow-300';
   return 'text-red-600 dark:text-red-300';
@@ -78,3 +78,53 @@ const DARK_ICON_BG: Record<string, string> = {
 
 const darkIconBg = computed(() => DARK_ICON_BG[props.iconBg] ?? 'dark:bg-slate-800');
 </script>
+
+<style scoped>
+.stat-card {
+  position: relative;
+  background-image: linear-gradient(140deg, var(--ai-panel-from) 0%, var(--ai-panel-to) 100%);
+  border: 1px solid var(--ai-border);
+  border-radius: 14px;
+  padding: 1.15rem 1.25rem;
+  backdrop-filter: blur(8px);
+  box-shadow: var(--ai-shadow-sm);
+  transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+  overflow: hidden;
+  isolation: isolate;
+}
+.stat-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(120deg, transparent 30%, rgba(96, 165, 250, 0.1) 50%, transparent 70%);
+  transform: translateX(-100%);
+  transition: transform 0.7s ease;
+  pointer-events: none;
+  z-index: -1;
+}
+.stat-card:hover {
+  transform: translateY(-3px);
+  border-color: var(--ai-border-strong);
+  box-shadow: var(--ai-shadow-md);
+}
+.stat-card:hover::before {
+  transform: translateX(100%);
+}
+
+.stat-card__icon {
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(96, 165, 250, 0.25);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  transition: transform 0.25s ease;
+}
+.stat-card:hover .stat-card__icon {
+  transform: scale(1.08) rotate(-3deg);
+}
+
+</style>
